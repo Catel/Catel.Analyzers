@@ -30,6 +30,8 @@ Some components in Catel are based on other open-source components. Each compone
 that is based on another component has a reference to the original component including
 the original license the code was delivered upon. Below is a list of these components:
 
-* 
+* WpfAnalyzers
+  https://github.com/DotNetAnalyzers/WpfAnalyzers
+  Original license: MIT
 
 If you think that this list is incomplete, let us know.

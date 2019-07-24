@@ -1,13 +1,17 @@
-<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>netstandard1.3</TargetFrameworks>
     <AssemblyName>Catel.Analyzers</AssemblyName>
-    <RootNamespace>Catel</RootNamespace>
+    <RootNamespace>Catel.Analyzers</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageId>Catel.Analyzers</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
     <Description>Roslyn analyzers for Catel.</Description>
     <PackageTags>catel;roslyn;analyzers</PackageTags>
+    <BuildOutputTargetFolder>analyzers\dotnet\cs</BuildOutputTargetFolder>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,13 +20,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Gu.Roslyn.Extensions" Version="0.5.1-dev" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.6.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10" PrivateAssets="all" />
-    <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Update="NETStandard.Library" Version="2.0.1" />
+    <PackageReference Update="NETStandard.Library" Version="2.0.1" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

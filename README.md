@@ -16,8 +16,9 @@ technology, from client to server.
 
 This project provides Roslyn code analyzers to provide info on best practices when using Catel.
 
-
 For documentation, please visit the [documentation portal](https://docs.catelproject.com)
+
+This code base has used [WpfAnalyzers](https://github.com/DotNetAnalyzers/WpfAnalyzers) as inspiration.
 
 ## How to contribute
 
