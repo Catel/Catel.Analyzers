@@ -9,7 +9,7 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class UnitTest : CodeFixVerifier
+    public class CTL0001AnalyzerUnitTests : CodeFixVerifier
     {
         //No diagnostics expected to show up
         [Test]
@@ -75,7 +75,7 @@
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
-            return new CatelAnalyzersAnalyzer();
+            return new MethodsAnalyzer();
         }
     }
 }

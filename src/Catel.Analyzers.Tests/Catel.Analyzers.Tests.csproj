@@ -11,10 +11,18 @@
     <SonarQubeExclude>true</SonarQubeExclude>
   </PropertyGroup>
 
-    <ItemGroup>
+  <PropertyGroup>
+    <UseWpf>true</UseWpf>
+    <ExtrasEnableImplicitWpfReferences>true</ExtrasEnableImplicitWpfReferences>
+    <ExtrasEnableImplicitWinFormsReferences>true</ExtrasEnableImplicitWinFormsReferences>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Catel.Core" Version="5.11.0-beta0005" />
+    <PackageReference Include="Catel.MVVM" Version="5.11.0-beta0005" />
     <PackageReference Include="Gu.Roslyn.Asserts" Version="3.1.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.6.2" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.1.0" />
     <PackageReference Include="NUnit" Version="3.12.0" PrivateAssets="all" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
   </ItemGroup>
@@ -40,10 +48,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks\" />
   </ItemGroup>
 
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />

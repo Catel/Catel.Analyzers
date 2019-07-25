@@ -8,6 +8,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catel.Analyzers.Tests", "Catel.Analyzers.Tests\Catel.Analyzers.Tests.csproj", "{6098D375-3739-440F-8BD5-B4054EAB26A9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{592C7EBF-517B-4C06-8F30-99ADE0C043A0}"
+	ProjectSection(SolutionItems) = preProject
+		GlobalSuppressions.cs = GlobalSuppressions.cs
+		MethodTimeLogger.cs = MethodTimeLogger.cs
+		SolutionAssemblyInfo.cs = SolutionAssemblyInfo.cs
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{502CCD3E-26E7-4064-B5FE-9852107BE471}"
 EndProject

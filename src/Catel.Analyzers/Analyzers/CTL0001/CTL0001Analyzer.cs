@@ -1,8 +1,5 @@
 ﻿namespace Catel.Analyzers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -15,6 +12,13 @@
             {
                 return;
             }
+
+            //if (context.SemanticModel. == KnownSymbols.IDispatcherService)
+            //{
+
+            //}
+
+            //context.SemanticModel.
 
             // TODO: Look for usage of IDispatcherService and report in if required
             //if (!context.IsExcludedFromAnalysis() &&

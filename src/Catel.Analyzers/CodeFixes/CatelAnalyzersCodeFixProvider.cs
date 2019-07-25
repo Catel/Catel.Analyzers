@@ -22,7 +22,7 @@
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(CatelAnalyzersAnalyzer.DiagnosticId); }
+            get { return ImmutableArray.Create(Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks.Id); }
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
