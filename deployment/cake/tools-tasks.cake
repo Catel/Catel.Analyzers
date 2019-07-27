@@ -1,4 +1,4 @@
-#l "components-variables.cake"
+#l "tools-variables.cake"
 
 #addin "nuget:?package=Cake.FileHelpers&version=3.0.0"
 
@@ -6,58 +6,112 @@ using System.Xml.Linq;
 
 //-------------------------------------------------------------
 
-private string GetComponentNuGetRepositoryUrl(string projectName)
+private void EnsureChocolateyLicenseFile(string projectName)
+{
+    // Required for Chocolatey
+
+    var projectDirectory = GetProjectDirectory(projectName);
+    var outputDirectory = GetProjectOutputDirectory(projectName);
+
+    // Check if it already exists
+    var fileName = string.Format("{0}/LICENSE.txt", outputDirectory);
+    if (!FileExists(fileName))
+    {
+        Information("Creating Chocolatey license file for '{0}'", projectName);
+
+        // Option 1: Copy from root
+        var sourceFile = "./LICENSE";
+        if (FileExists(sourceFile))
+        {
+            Information("Using license file from repository");
+
+            CopyFile(sourceFile, fileName);
+            return;
+        }
+
+        // Option 2: use expression (PackageLicenseExpression)
+        throw new Exception("Cannot find ./LICENSE, which is required for Chocolatey");
+    }
+}
+
+//-------------------------------------------------------------
+
+private void EnsureChocolateyVerificationFile(string projectName)
+{
+    // Required for Chocolatey
+
+    var projectDirectory = GetProjectDirectory(projectName);
+    var outputDirectory = GetProjectOutputDirectory(projectName);
+
+    // Check if it already exists
+    var fileName = string.Format("{0}/VERIFICATION.txt", outputDirectory);
+    if (!FileExists(fileName))
+    {
+        Information("Creating Chocolatey verification file for '{0}'", projectName);
+        
+        System.IO.File.WriteAllText(fileName, @"VERIFICATION
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+ 
+<Include details of how to verify checksum contents>
+<If software vendor, explain that here - checksum verification instructions are optional>");
+    }
+}
+
+//-------------------------------------------------------------
+
+private string GetToolsNuGetRepositoryUrls(string projectName)
 {
     // Allow per project overrides via "NuGetRepositoryUrlFor[ProjectName]"
-    return GetProjectSpecificConfigurationValue(projectName, "NuGetRepositoryUrlFor", NuGetRepositoryUrl);
+    return GetProjectSpecificConfigurationValue(projectName, "ToolsNuGetRepositoryUrlsFor", ToolsNuGetRepositoryUrls);
 }
 
 //-------------------------------------------------------------
 
-private string GetComponentNuGetRepositoryApiKey(string projectName)
+private string GetToolsNuGetRepositoryApiKeys(string projectName)
 {
     // Allow per project overrides via "NuGetRepositoryApiKeyFor[ProjectName]"
-    return GetProjectSpecificConfigurationValue(projectName, "NuGetRepositoryApiKeyFor", NuGetRepositoryApiKey);
+    return GetProjectSpecificConfigurationValue(projectName, "ToolsNuGetRepositoryApiKeysFor", ToolsNuGetRepositoryApiKeys);
 }
 
 //-------------------------------------------------------------
 
-private void ValidateComponentsInput()
+private void ValidateToolsInput()
 {
     // No validation required (yet)
 }
 
 //-------------------------------------------------------------
 
-private bool HasComponents()
+private bool HasTools()
 {
-    return Components != null && Components.Count > 0;
+    return Tools != null && Tools.Count > 0;
 }
 
 //-------------------------------------------------------------
 
-private async Task PrepareForComponentsAsync()
+private async Task PrepareForToolsAsync()
 {
-    if (!HasComponents())
+    if (!HasTools())
     {
         return;
     }
 
     // Check whether projects should be processed, `.ToList()` 
     // is required to prevent issues with foreach
-    foreach (var component in Components.ToList())
+    foreach (var tool in Tools.ToList())
     {
-        if (!ShouldProcessProject(component))
+        if (!ShouldProcessProject(tool))
         {
-            Components.Remove(component);
+            Tools.Remove(tool);
         }
     }
 
     if (IsLocalBuild && Target.ToLower().Contains("packagelocal"))
     {
-        foreach (var component in Components)
+        foreach (var tool in Tools)
         {
-            var cacheDirectory = Environment.ExpandEnvironmentVariables(string.Format("%userprofile%/.nuget/packages/{0}/{1}", component, VersionNuGet));
+            var cacheDirectory = Environment.ExpandEnvironmentVariables(string.Format("%userprofile%/.nuget/packages/{0}/{1}", tool, VersionNuGet));
 
             Information("Checking for existing local NuGet cached version at '{0}'", cacheDirectory);
 
@@ -88,18 +142,18 @@ private async Task PrepareForComponentsAsync()
 
 //-------------------------------------------------------------
 
-private void UpdateInfoForComponents()
+private void UpdateInfoForTools()
 {
-    if (!HasComponents())
+    if (!HasTools())
     {
         return;
     }
 
-    foreach (var component in Components)
+    foreach (var tool in Tools)
     {
-        Information("Updating version for component '{0}'", component);
+        Information("Updating version for tool '{0}'", tool);
 
-        var projectFileName = GetProjectFileName(component);
+        var projectFileName = GetProjectFileName(tool);
 
         TransformConfig(projectFileName, new TransformationCollection 
         {
@@ -110,18 +164,18 @@ private void UpdateInfoForComponents()
 
 //-------------------------------------------------------------
 
-private void BuildComponents()
+private void BuildTools()
 {
-    if (!HasComponents())
+    if (!HasTools())
     {
         return;
     }
     
-    foreach (var component in Components)
+    foreach (var tool in Tools)
     {
-        LogSeparator("Building component '{0}'", component);
+        LogSeparator("Building tool '{0}'", tool);
 
-        var projectFileName = GetProjectFileName(component);
+        var projectFileName = GetProjectFileName(tool);
         
         var msBuildSettings = new MSBuildSettings {
             Verbosity = Verbosity.Quiet,
@@ -132,12 +186,12 @@ private void BuildComponents()
             PlatformTarget = PlatformTarget.MSIL
         };
 
-        ConfigureMsBuild(msBuildSettings, component);
+        ConfigureMsBuild(msBuildSettings, tool);
         
         // Note: we need to set OverridableOutputPath because we need to be able to respect
         // AppendTargetFrameworkToOutputPath which isn't possible for global properties (which
         // are properties passed in using the command line)
-        var outputDirectory = GetProjectOutputDirectory(component);
+        var outputDirectory = GetProjectOutputDirectory(tool);
         Information("Output directory: '{0}'", outputDirectory);
         msBuildSettings.WithProperty("OverridableOutputPath", outputDirectory);
         msBuildSettings.WithProperty("PackageOutputPath", OutputRootDirectory);
@@ -166,27 +220,27 @@ private void BuildComponents()
 
 //-------------------------------------------------------------
 
-private void PackageComponents()
+private void PackageTools()
 {
-    if (!HasComponents())
+    if (!HasTools())
     {
         return;
     }
 
-    foreach (var component in Components)
+    foreach (var tool in Tools)
     {
-        LogSeparator("Packaging component '{0}'", component);
+        LogSeparator("Packaging tool '{0}'", tool);
 
-        var projectDirectory = string.Format("./src/{0}", component);
-        var projectFileName = string.Format("{0}/{1}.csproj", projectDirectory, component);
-        var outputDirectory = GetProjectOutputDirectory(component);
+        var projectDirectory = string.Format("./src/{0}", tool);
+        var projectFileName = string.Format("{0}/{1}.csproj", projectDirectory, tool);
+        var outputDirectory = GetProjectOutputDirectory(tool);
         Information("Output directory: '{0}'", outputDirectory);
 
         // Step 1: remove intermediate files to ensure we have the same results on the build server, somehow NuGet 
         // targets tries to find the resource assemblies in [ProjectName]\obj\Release\net46\de\[ProjectName].resources.dll',
         // we won't run a clean on the project since it will clean out the actual output (which we still need for packaging)
 
-        Information("Cleaning intermediate files for component '{0}'", component);
+        Information("Cleaning intermediate files for tool '{0}'", tool);
 
         var binFolderPattern = string.Format("{0}/bin/{1}/**.dll", projectDirectory, ConfigurationName);
 
@@ -204,8 +258,12 @@ private void PackageComponents()
 
         Information(string.Empty);
 
-        // Step 2: Go packaging!
-        Information("Using 'msbuild' to package '{0}'", component);
+        // Step 2: Ensure chocolatey stuff
+        EnsureChocolateyLicenseFile(tool);
+        EnsureChocolateyVerificationFile(tool);
+
+        // Step 3: Go packaging!
+        Information("Using 'msbuild' to package '{0}'", tool);
 
         var msBuildSettings = new MSBuildSettings {
             Verbosity = Verbosity.Quiet,
@@ -216,7 +274,7 @@ private void PackageComponents()
             PlatformTarget = PlatformTarget.MSIL
         };
 
-        ConfigureMsBuild(msBuildSettings, component, "pack");
+        ConfigureMsBuild(msBuildSettings, tool, "pack");
 
         // Note: we need to set OverridableOutputPath because we need to be able to respect
         // AppendTargetFrameworkToOutputPath which isn't possible for global properties (which
@@ -244,6 +302,12 @@ private void PackageComponents()
         // uses obj/release instead of [outputdirectory]
         msBuildSettings.WithProperty("DotNetPackIntermediateOutputPath", outputDirectory);
         
+        // As described in the this issue: https://github.com/NuGet/Home/issues/4360
+        // we should not use IsTool, but set BuildOutputTargetFolder instead
+        msBuildSettings.WithProperty("BuildOutputTargetFolder", "tools");
+        msBuildSettings.WithProperty("NoDefaultExcludes", "true");
+        //msBuildSettings.WithProperty("IsTool", "true");
+
         msBuildSettings.WithProperty("NoBuild", "true");
         msBuildSettings.Targets.Add("Pack");
 
@@ -275,75 +339,83 @@ private void PackageComponents()
 
 //-------------------------------------------------------------
 
-private async Task DeployComponentsAsync()
+private async Task DeployToolsAsync()
 {
-    if (!HasComponents())
+    if (!HasTools())
     {
         return;
     }
 
-    foreach (var component in Components)
+    foreach (var tool in Tools)
     {
-        if (!ShouldDeployProject(component))
+        if (!ShouldDeployProject(tool))
         {
-            Information("Component '{0}' should not be deployed", component);
+            Information("Tool '{0}' should not be deployed", tool);
             continue;
         }
 
-        LogSeparator("Deploying component '{0}'", component);
+        LogSeparator("Deploying tool '{0}'", tool);
 
-        var packageToPush = string.Format("{0}/{1}.{2}.nupkg", OutputRootDirectory, component, VersionNuGet);
-        var nuGetRepositoryUrl = GetComponentNuGetRepositoryUrl(component);
-        var nuGetRepositoryApiKey = GetComponentNuGetRepositoryApiKey(component);
+        var packageToPush = string.Format("{0}/{1}.{2}.nupkg", OutputRootDirectory, tool, VersionNuGet);
+        var nuGetRepositoryUrls = GetToolsNuGetRepositoryUrls(tool);
+        var nuGetRepositoryApiKeys = GetToolsNuGetRepositoryApiKeys(tool);
 
-        if (string.IsNullOrWhiteSpace(nuGetRepositoryUrl))
+        var nuGetServers = GetNuGetServers(nuGetRepositoryUrls, nuGetRepositoryApiKeys);
+        if (nuGetServers.Count == 0)
         {
-            throw new Exception("NuGet repository is empty, as a protection mechanism this must *always* be specified to make sure packages aren't accidentally deployed to the default public NuGet feed");
+            throw new Exception("No NuGet repositories specified, as a protection mechanism this must *always* be specified to make sure packages aren't accidentally deployed to the default public NuGet feed");
         }
 
-        NuGetPush(packageToPush, new NuGetPushSettings
-        {
-            Source = nuGetRepositoryUrl,
-            ApiKey = nuGetRepositoryApiKey
-        });
+        Information("Found '{0}' target NuGet servers to push tool '{1}'", nuGetServers.Count, tool);
 
-        await NotifyAsync(component, string.Format("Deployed to NuGet store"), TargetType.Component);
+        foreach (var nuGetServer in nuGetServers)
+        {
+            Information("Pushing to '{0}'", nuGetServer);
+
+            NuGetPush(packageToPush, new NuGetPushSettings
+            {
+                Source = nuGetServer.Url,
+                ApiKey = nuGetServer.ApiKey
+            });
+        }
+
+        await NotifyAsync(tool, string.Format("Deployed to NuGet store(s)"), TargetType.Tool);
     }
 }
 
 //-------------------------------------------------------------
 
-Task("UpdateInfoForComponents")
+Task("UpdateInfoForTools")
     .IsDependentOn("Clean")
     .Does(() =>
 {
     UpdateSolutionAssemblyInfo();
-    UpdateInfoForComponents();
+    UpdateInfoForTools();
 });
 
 //-------------------------------------------------------------
 
-Task("BuildComponents")
-    .IsDependentOn("UpdateInfoForComponents")
+Task("BuildTools")
+    .IsDependentOn("UpdateInfoForTools")
     .Does(() =>
 {
-    BuildComponents();
+    BuildTools();
 });
 
 //-------------------------------------------------------------
 
-Task("PackageComponents")
-    .IsDependentOn("BuildComponents")
+Task("PackageTools")
+    .IsDependentOn("BuildTools")
     .Does(() =>
 {
-    PackageComponents();
+    PackageTools();
 });
 
 //-------------------------------------------------------------
 
-Task("DeployComponents")
-    .IsDependentOn("PackageComponents")
+Task("DeployTools")
+    .IsDependentOn("PackageTools")
     .Does(async () =>
 {
-    await DeployComponentsAsync();
+    await DeployToolsAsync();
 });

@@ -213,11 +213,15 @@ private void PackageDockerImages()
         msBuildSettings.WithProperty("ConfigurationName", ConfigurationName);
         msBuildSettings.WithProperty("PackageVersion", VersionNuGet);
 
+        // Disable code analyses, we experienced publish issues with mvc .net core projects
+        msBuildSettings.WithProperty("RunCodeAnalysis", "false");
+
         var publishSettings = new DotNetCorePublishSettings
         {
             MSBuildSettings = msBuildSettings,
             OutputDirectory = outputDirectory,
-            Configuration = ConfigurationName
+            Configuration = ConfigurationName,
+            //NoBuild = true
         };
 
         DotNetCorePublish(projectFileName, publishSettings);
@@ -256,7 +260,7 @@ private void PackageDockerImages()
 
 //-------------------------------------------------------------
 
-private void DeployDockerImages()
+private async Task DeployDockerImagesAsync()
 {
     if (!HasDockerImages())
     {
@@ -346,6 +350,8 @@ private void DeployDockerImages()
                 Force = true,
                 NoRawLog = true,
             });
+
+            await NotifyAsync(dockerImage, string.Format("Deployed to Octopus Deploy"), TargetType.DockerImage);
         }
         finally
         {
@@ -394,7 +400,7 @@ Task("PackageDockerImages")
 
 Task("DeployDockerImages")
     .IsDependentOn("PackageDockerImages")
-    .Does(() =>
+    .Does(async () =>
 {
-    DeployDockerImages();
+    await DeployDockerImagesAsync();
 });
