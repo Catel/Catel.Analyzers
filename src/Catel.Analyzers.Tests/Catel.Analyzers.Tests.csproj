@@ -20,11 +20,11 @@
   <ItemGroup>
     <PackageReference Include="Catel.Core" Version="5.11.0-beta0005" />
     <PackageReference Include="Catel.MVVM" Version="5.11.0-beta0005" />
-    <PackageReference Include="Gu.Roslyn.Asserts" Version="3.1.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.3" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.1.0" />
+    <PackageReference Include="Gu.Roslyn.Asserts" Version="3.2.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.4" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.2.1" />
     <PackageReference Include="NUnit" Version="3.12.0" PrivateAssets="all" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.14.0" />
   </ItemGroup>
 
   <ItemGroup>
