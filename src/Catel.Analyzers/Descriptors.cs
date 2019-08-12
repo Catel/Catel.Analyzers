@@ -6,7 +6,7 @@
     {
         internal static readonly DiagnosticDescriptor CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks = Create(
             id: "CTL0001",
-            title: "Use InvokeTaskAsync instead when invoking tasks using the IDispatcherService.",
+            title: "Use InvokeTaskAsync(async () => ...) instead of InvokeAsync(async () => ...) when invoking tasks using the IDispatcherService.",
             messageFormat: "Use InvokeTaskAsync instead.",
             category: AnalyzerCategory.MVVM,
             defaultSeverity: DiagnosticSeverity.Warning,

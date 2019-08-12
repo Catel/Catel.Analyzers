@@ -12,19 +12,18 @@
     public class CTL0001AnalyzerUnitTests
     {
         private static readonly MethodsAnalyzer Analyzer = new MethodsAnalyzer();
+        private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks);
 
-        //No diagnostics expected to show up
         [Test]
-        public void TestMethod1()
+        public void Valid_NoCode()
         {
             var before = @"";
 
             RoslynAssert.Valid(Analyzer, before);
         }
 
-        //Diagnostic and CodeFix both triggered and checked for
         [Test]
-        public void TestMethod2()
+        public void Valid_Code_01()
         {
             var before = @"
     using System;
@@ -46,28 +45,74 @@
 
             protected override async Task InitializeAsync()
             {
-                await _dispatcherService.InvokeAsync(async () => { });
+                await _dispatcherService.InvokeTaskAsync(async () => { });
             }
         }
     }";
 
             RoslynAssert.Valid(Analyzer, before);
+        }
 
-    //        var fixtest = @"
-    //using System;
-    //using System.Collections.Generic;
-    //using System.Linq;
-    //using System.Text;
-    //using System.Threading.Tasks;
-    //using System.Diagnostics;
+        [Test]
+        public void Valid_Code_02()
+        {
+            var before = @"
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Catel.MVVM;
+    using Catel.Services;
 
-    //namespace ConsoleApplication1
-    //{
-    //    class TYPENAME
-    //    {   
-    //    }
-    //}";
-            //VerifyCSharpFix(before, fixtest);
+    namespace MyWpfApp
+    {
+        public class MyViewModel : ViewModelBase
+        {
+            private readonly IDispatcherService _dispatcherService;
+
+            public MyViewModel(IDispatcherService dispatcherService)
+            {
+                _dispatcherService = dispatcherService;
+            }
+
+            protected override async Task InitializeAsync()
+            {
+                await _dispatcherService.InvokeAsync(() => { });
+            }
+        }
+    }";
+
+            RoslynAssert.Valid(Analyzer, before);
+        }
+
+        [Test]
+        public void Invalid_Code_01()
+        {
+            var before = @"
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Catel.MVVM;
+    using Catel.Services;
+
+    namespace MyWpfApp
+    {
+        public class MyViewModel : ViewModelBase
+        {
+            private readonly IDispatcherService _dispatcherService;
+
+            public MyViewModel(IDispatcherService dispatcherService)
+            {
+                _dispatcherService = dispatcherService;
+            }
+
+            protected override async Task InitializeAsync()
+            {
+                await ↓_dispatcherService.InvokeAsync(async () => { });
+            }
+        }
+    }";
+
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, before);
         }
     }
 }

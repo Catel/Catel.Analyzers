@@ -7,25 +7,6 @@
 
     public class CTL0001Analyzer : AnalyzerBase
     {
-        internal const string DispatcherServiceTypeName = "Catel.MVVM.IDispatcherService";
-        internal const string InvokeAsyncMethodName = "InvokeAsync";
-
-        //public override void HandleOperation(OperationAnalysisContext context)
-        //{
-        //    var operation = context.Operation;
-        //    if (operation is null)
-        //    {
-        //        return;
-        //    }
-
-        //    var expression = 
-
-        //    foreach (var childOperation in operation.Children)
-        //    {
-        //        var semanticModel = childOperation.SemanticModel;
-        //    }
-        //}
-
         public override void HandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {
             var methodSymbol = context.ContainingSymbol as IMethodSymbol;
@@ -40,49 +21,24 @@
                 return;
             }
 
+            if (!expression.TryGetTarget(KnownSymbols.IDispatcherService.InvokeAsync, context.SemanticModel, context.CancellationToken, out _))
+            {
+                return;
+            }
 
-            var typeInfo = context.SemanticModel.GetTypeInfo(expression);
+            // TODO: Optimize performance by different check for async
 
+            // Check if async () is being used
+            var firstArgument = expression.ArgumentList.Arguments.FirstOrDefault();
+            if (firstArgument is null || !firstArgument.ToString().StartsWith("async"))
+            {
+                return;
+            }
 
-            //if (!expression.TryGetTarget(KnownSymbols.IDispatcherService.InvokeAsync, context.SemanticModel, context.CancellationToken, out _))
-            //{
-            //    return;
-            //}
+            context.ReportDiagnostic(
+                Diagnostic.Create(
+                    Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks,
+                    expression.GetLocation()));
         }
-
-        //public void Handle(SyntaxNodeAnalysisContext context)
-        //{
-
-
-        //    var dispatcherServiceType = context.Compilation.GetTypeByMetadataName(DispatcherServiceTypeName);
-
-        //    methodSymbol.
-
-        //    //RegularBodyMethodSymbol
-
-        //    //foreach (var body in memberSymbol.Bodies)
-
-
-
-        //    //if (context.SemanticModel. == KnownSymbols.IDispatcherService)
-        //    //{
-
-        //    //}
-
-        //    //context.SemanticModel.
-
-        //    // TODO: Look for usage of IDispatcherService and report in if required
-        //    //if (!context.IsExcludedFromAnalysis() &&
-        //    //    context.ContainingSymbol is ISymbol memberSymbol &&
-        //    //    memberSymbol.Kind == SymbolKind.Method)
-        //    //{
-        //    //    context.ReportDiagnostic(
-        //    //        Diagnostic.Create(
-        //    //            Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks,
-        //    //            keyword.GetLocation(),
-        //    //            memberSymbol.ToDisplayString(),
-        //    //            memberSymbol.ContainingType.ToDisplayString()));
-        //    //}
-        //}
     }
 }
