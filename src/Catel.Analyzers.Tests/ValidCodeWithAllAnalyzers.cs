@@ -19,9 +19,9 @@
             .Select(t => (DiagnosticAnalyzer)Activator.CreateInstance(t))
             .ToArray();
 
-        private static readonly Solution AnalyzerProjectSolution = CodeFactory.CreateSolution(
-            new FileInfo(AssemblyDirectoryHelper.Resolve(@"..\..\..\..\src\Catel.Analyzers.Tests\Catel.Analyzers.Tests.csproj")),
-            AllAnalyzers);
+        //private static readonly Solution AnalyzerProjectSolution = CodeFactory.CreateSolution(
+        //    new FileInfo(AssemblyDirectoryHelper.Resolve(@"..\..\..\..\src\Catel.Analyzers.Tests\Catel.Analyzers.Tests.csproj")),
+        //    AllAnalyzers);
 
         [Test]
         public void NotEmpty()
@@ -30,10 +30,10 @@
             Assert.Pass($"Count: {AllAnalyzers.Count}");
         }
 
-        [Explicit, TestCaseSource(nameof(AllAnalyzers))]
-        public void AnalyzerProject(DiagnosticAnalyzer analyzer)
-        {
-            RoslynAssert.Valid(analyzer, AnalyzerProjectSolution);
-        }
+        //[Explicit, TestCaseSource(nameof(AllAnalyzers))]
+        //public void AnalyzerProject(DiagnosticAnalyzer analyzer)
+        //{
+        //    RoslynAssert.Valid(analyzer, AnalyzerProjectSolution);
+        //}
     }
 }
