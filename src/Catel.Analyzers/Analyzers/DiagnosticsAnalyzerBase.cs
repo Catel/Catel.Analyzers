@@ -8,7 +8,6 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Diagnostics;
 
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
     internal abstract class DiagnosticAnalyzerBase : DiagnosticAnalyzer
     {
         private readonly Dictionary<string, IAnalyzer> _analyzers = new Dictionary<string, IAnalyzer>();
