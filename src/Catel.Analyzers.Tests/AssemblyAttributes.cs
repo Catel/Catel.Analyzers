@@ -3,8 +3,7 @@
 [assembly: MetadataReference(typeof(object), new[] { "global", "mscorlib" })]
 [assembly: MetadataReference(typeof(System.Diagnostics.Debug), new[] { "global", "System" })]
 [assembly: TransitiveMetadataReferences(typeof(Catel.Analyzers.Tests.ValidCodeWithAllAnalyzers))]
-//[assembly: TransitiveMetadataReferences(typeof(System.Reactive.Concurrency.DispatcherScheduler))]
-[assembly: MetadataReferences(
+[assembly: TransitiveMetadataReferences(
     typeof(System.Linq.Enumerable),
     typeof(System.Net.WebClient),
     typeof(System.Drawing.Bitmap),
@@ -22,3 +21,4 @@
     //typeof(Gu.Roslyn.CodeFixExtensions.CodeStyle),
     typeof(NUnit.Framework.Assert),
     typeof(RoslynAssert))]
+

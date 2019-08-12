@@ -20,8 +20,7 @@
 
         private static readonly Solution AnalyzerProjectSolution = CodeFactory.CreateSolution(
             ProjectFile.Find("Catel.Analyzers.csproj"),
-            AllAnalyzers,
-            RoslynAssert.MetadataReferences);
+            AllAnalyzers);
 
         //private static readonly Solution ValidCodeProjectSln = CodeFactory.CreateSolution(
         //    ProjectFile.Find("ValidCode.csproj"),

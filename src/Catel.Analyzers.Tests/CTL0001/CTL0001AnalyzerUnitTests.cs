@@ -26,22 +26,32 @@
         {
             var test = @"
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
-    using System.Diagnostics;
+    using Catel.MVVM;
+    using Catel.Services;
 
-    namespace ConsoleApplication1
+    namespace MyWpfApp
     {
-        class TypeName
-        {   
+        public class MyViewModel : ViewModelBase
+        {
+            private readonly IDispatcherService _dispatcherService;
+
+            public MyViewModel(IDispatcherService dispatcherService)
+            {
+                _dispatcherService = dispatcherService;
+            }
+
+            protected override async Task InitializeAsync()
+            {
+                await _dispatcherService.InvokeAsync(async () => { });
+            }
         }
     }";
             var expected = new DiagnosticResult
             {
                 Id = "CatelAnalyzers",
-                Message = String.Format("Type name '{0}' contains lowercase letters", "TypeName"),
+                Message = string.Format("Type name '{0}' contains lowercase letters", "TypeName"),
                 Severity = DiagnosticSeverity.Warning,
                 Locations =
                     new[] {
