@@ -1,6 +1,8 @@
 ﻿namespace Catel.Analyzers
 {
+    using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
 
     public class CTL0001Analyzer : AnalyzerBase
@@ -8,27 +10,45 @@
         internal const string DispatcherServiceTypeName = "Catel.MVVM.IDispatcherService";
         internal const string InvokeAsyncMethodName = "InvokeAsync";
 
-        public override void HandleOperation(OperationAnalysisContext context)
+        //public override void HandleOperation(OperationAnalysisContext context)
+        //{
+        //    var operation = context.Operation;
+        //    if (operation is null)
+        //    {
+        //        return;
+        //    }
+
+        //    var expression = 
+
+        //    foreach (var childOperation in operation.Children)
+        //    {
+        //        var semanticModel = childOperation.SemanticModel;
+        //    }
+        //}
+
+        public override void HandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {
-            var operation = context.Operation;
-            if (operation is null)
+            var methodSymbol = context.ContainingSymbol as IMethodSymbol;
+            if (methodSymbol is null)
             {
                 return;
             }
 
-            foreach (var childOperation in operation.Children)
+            var expression = context.Node as InvocationExpressionSyntax;
+            if (expression is null)
             {
-                var semanticModel = childOperation.SemanticModel;
+                return;
+            }
+
+            if (!expression.TryGetTarget(KnownSymbols.IDispatcherService.InvokeAsync, context.SemanticModel, context.CancellationToken, out _))
+            {
+                return;
             }
         }
 
         //public void Handle(SyntaxNodeAnalysisContext context)
         //{
-        //    var methodSymbol = context.ContainingSymbol as IMethodSymbol;
-        //    if (methodSymbol is null)
-        //    {
-        //        return;
-        //    }
+
 
         //    var dispatcherServiceType = context.Compilation.GetTypeByMetadataName(DispatcherServiceTypeName);
 

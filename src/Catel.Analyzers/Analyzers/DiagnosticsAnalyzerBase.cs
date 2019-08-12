@@ -43,6 +43,7 @@
                 SyntaxKind.ConstructorDeclaration,
                 SyntaxKind.EventDeclaration,
                 SyntaxKind.EventFieldDeclaration,
+                SyntaxKind.InvocationExpression,
                 SyntaxKind.PropertyDeclaration,
                 SyntaxKind.MethodDeclaration,
                 SyntaxKind.EnumDeclaration,

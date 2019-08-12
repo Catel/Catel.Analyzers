@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -19,7 +20,7 @@
             .ToArray();
 
         private static readonly Solution AnalyzerProjectSolution = CodeFactory.CreateSolution(
-            ProjectFile.Find("Catel.Analyzers.csproj"),
+            new FileInfo(AssemblyDirectoryHelper.Resolve(@"..\..\..\..\src\Catel.Analyzers.sln")),
             AllAnalyzers);
 
         //private static readonly Solution ValidCodeProjectSln = CodeFactory.CreateSolution(

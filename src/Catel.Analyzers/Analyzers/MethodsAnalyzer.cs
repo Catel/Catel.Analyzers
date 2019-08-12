@@ -11,11 +11,6 @@
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
             ImmutableArray.Create(Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks);
 
-        protected override bool ShouldHandleOperation(OperationAnalysisContext context)
-        {
-            return true;
-        }
-
         protected override bool ShouldHandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {
             var memberSymbol = context.ContainingSymbol as ISymbol;
