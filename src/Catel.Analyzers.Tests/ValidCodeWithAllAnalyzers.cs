@@ -20,27 +20,8 @@
             .ToArray();
 
         private static readonly Solution AnalyzerProjectSolution = CodeFactory.CreateSolution(
-            new FileInfo(AssemblyDirectoryHelper.Resolve(@"..\..\..\..\src\Catel.Analyzers.sln")),
+            new FileInfo(AssemblyDirectoryHelper.Resolve(@"..\..\..\..\src\Catel.Analyzers.Tests\Catel.Analyzers.Tests.csproj")),
             AllAnalyzers);
-
-        //private static readonly Solution ValidCodeProjectSln = CodeFactory.CreateSolution(
-        //    ProjectFile.Find("ValidCode.csproj"),
-        //    AllAnalyzers,
-        //    RoslynAssert.MetadataReferences);
-
-        //[SetUp]
-        //public void Setup()
-        //{
-        //    // The cache will be enabled when running in VS.
-        //    // It speeds up the tests and makes them more realistic
-        //    Cache<SyntaxTree, SemanticModel>.Begin();
-        //}
-
-        //[TearDown]
-        //public void TearDown()
-        //{
-        //    Cache<SyntaxTree, SemanticModel>.End();
-        //}
 
         [Test]
         public void NotEmpty()
@@ -49,13 +30,7 @@
             Assert.Pass($"Count: {AllAnalyzers.Count}");
         }
 
-        //[TestCaseSource(nameof(AllAnalyzers))]
-        //public void ValidCodeProject(DiagnosticAnalyzer analyzer)
-        //{
-        //    RoslynAssert.Valid(analyzer, ValidCodeProjectSln);
-        //}
-
-        [TestCaseSource(nameof(AllAnalyzers))]
+        [Explicit, TestCaseSource(nameof(AllAnalyzers))]
         public void AnalyzerProject(DiagnosticAnalyzer analyzer)
         {
             RoslynAssert.Valid(analyzer, AnalyzerProjectSolution);
