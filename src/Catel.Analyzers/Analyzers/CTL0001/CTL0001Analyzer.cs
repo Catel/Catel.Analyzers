@@ -40,10 +40,14 @@
                 return;
             }
 
-            if (!expression.TryGetTarget(KnownSymbols.IDispatcherService.InvokeAsync, context.SemanticModel, context.CancellationToken, out _))
-            {
-                return;
-            }
+
+            var typeInfo = context.SemanticModel.GetTypeInfo(expression);
+
+
+            //if (!expression.TryGetTarget(KnownSymbols.IDispatcherService.InvokeAsync, context.SemanticModel, context.CancellationToken, out _))
+            //{
+            //    return;
+            //}
         }
 
         //public void Handle(SyntaxNodeAnalysisContext context)

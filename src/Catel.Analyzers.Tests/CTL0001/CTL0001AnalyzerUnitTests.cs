@@ -4,27 +4,29 @@
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.Diagnostics;
     using System;
-    using TestHelper;
     using Catel.Analyzers;
     using NUnit.Framework;
+    using Gu.Roslyn.Asserts;
 
     [TestFixture]
-    public class CTL0001AnalyzerUnitTests : CodeFixVerifier
+    public class CTL0001AnalyzerUnitTests
     {
+        private static readonly MethodsAnalyzer Analyzer = new MethodsAnalyzer();
+
         //No diagnostics expected to show up
         [Test]
         public void TestMethod1()
         {
-            var test = @"";
+            var before = @"";
 
-            VerifyCSharpDiagnostic(test);
+            RoslynAssert.Valid(Analyzer, before);
         }
 
         //Diagnostic and CodeFix both triggered and checked for
         [Test]
         public void TestMethod2()
         {
-            var test = @"
+            var before = @"
     using System;
     using System.Threading;
     using System.Threading.Tasks;
@@ -48,44 +50,24 @@
             }
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = "CatelAnalyzers",
-                Message = string.Format("Type name '{0}' contains lowercase letters", "TypeName"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 11, 15)
-                        }
-            };
 
-            VerifyCSharpDiagnostic(test, expected);
+            RoslynAssert.Valid(Analyzer, before);
 
-            var fixtest = @"
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Diagnostics;
+    //        var fixtest = @"
+    //using System;
+    //using System.Collections.Generic;
+    //using System.Linq;
+    //using System.Text;
+    //using System.Threading.Tasks;
+    //using System.Diagnostics;
 
-    namespace ConsoleApplication1
-    {
-        class TYPENAME
-        {   
-        }
-    }";
-            VerifyCSharpFix(test, fixtest);
-        }
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new CatelAnalyzersCodeFixProvider();
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new MethodsAnalyzer();
+    //namespace ConsoleApplication1
+    //{
+    //    class TYPENAME
+    //    {   
+    //    }
+    //}";
+            //VerifyCSharpFix(before, fixtest);
         }
     }
 }
