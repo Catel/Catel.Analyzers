@@ -9,7 +9,7 @@
             title: "Use InvokeTaskAsync(async () => ...) instead of InvokeAsync(async () => ...) when invoking tasks using the IDispatcherService.",
             messageFormat: "Use InvokeTaskAsync instead.",
             category: AnalyzerCategory.MVVM,
-            defaultSeverity: DiagnosticSeverity.Warning,
+            defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true,
             description: "Use InvokeTaskAsync instead when invoking tasks using the IDispatcherService.");
 

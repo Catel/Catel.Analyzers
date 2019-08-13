@@ -114,5 +114,41 @@
 
             RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, before);
         }
+
+        [Test]
+        public void Invalid_Code_02()
+        {
+            var before = @"
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Catel;
+    using Catel.MVVM;
+    using Catel.Services;
+
+    namespace MyWpfApp
+    {
+        public class MyViewModel : ViewModelBase
+        {
+            public IDispatcherService DispatcherService { get; private set; }
+
+            public MyViewModel(IDispatcherService dispatcherService)
+            {
+                DispatcherService = dispatcherService;
+            }
+
+            protected async Task MyMethod(object project)
+            {
+                Argument.IsNotNull(() => project);
+
+                await ↓DispatcherService.InvokeAsync(async () =>
+                {
+                    // some code here
+                });
+            }
+        }
+    }";
+
+            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, before);
+        }
     }
 }

@@ -7,7 +7,10 @@
     <PackageId>Catel.Analyzers</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
     <Description>Roslyn analyzers for Catel.</Description>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <PackageTags>catel;roslyn;analyzers</PackageTags>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
     <BuildOutputTargetFolder>analyzers\dotnet\cs</BuildOutputTargetFolder>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -32,6 +35,7 @@
   <ItemGroup>
     <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\Gu.Roslyn.Extensions.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>
