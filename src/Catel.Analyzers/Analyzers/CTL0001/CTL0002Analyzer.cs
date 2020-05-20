@@ -5,7 +5,7 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
 
-    public class CTL0001Analyzer : AnalyzerBase
+    public class CTL0002Analyzer : AnalyzerBase
     {
         public override void HandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {
@@ -21,7 +21,7 @@
                 return;
             }
 
-            if (!expression.TryGetTarget(KnownSymbols.Catel_MVVM.IDispatcherService.InvokeAsync, context.SemanticModel, context.CancellationToken, out _))
+            if (!expression.TryGetTarget(KnownSymbols.Catel_Core.ObservableObject.RaisePropertyChanged_ExpressionBased, context.SemanticModel, context.CancellationToken, out _))
             {
                 return;
             }
@@ -30,14 +30,14 @@
 
             // Check if async () is being used
             var firstArgument = expression.ArgumentList.Arguments.FirstOrDefault();
-            if (firstArgument is null || !firstArgument.ToString().StartsWith("async"))
+            if (firstArgument is null || !firstArgument.ToString().StartsWith("() => "))
             {
                 return;
             }
 
             context.ReportDiagnostic(
                 Diagnostic.Create(
-                    Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks,
+                    Descriptors.CTL0002_UseRaisePropertyChangedWithNameOf,
                     expression.GetLocation()));
         }
     }

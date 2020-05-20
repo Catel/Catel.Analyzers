@@ -13,6 +13,15 @@
             isEnabledByDefault: true,
             description: "Use InvokeTaskAsync instead when invoking tasks using the IDispatcherService.");
 
+        internal static readonly DiagnosticDescriptor CTL0002_UseRaisePropertyChangedWithNameOf = Create(
+            id: "CTL0002",
+            title: "Use RaisePropertyChanged(nameof(MyProperty)) instead of RaisePropertyChanged(() => MyProperty).",
+            messageFormat: "Use RaisePropertyChanged(nameof(PropertyName)) instead.",
+            category: AnalyzerCategory.Core,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: "Use RaisePropertyChanged(nameof(MyProperty)) instead of RaisePropertyChanged(() => MyProperty) to improve performance and decrease allocations.");
+
         // TODO: Add more descriptors here
 
         /// <summary>
