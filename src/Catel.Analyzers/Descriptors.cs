@@ -6,8 +6,8 @@
     {
         internal static readonly DiagnosticDescriptor CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks = Create(
             id: "CTL0001",
-            title: "Use InvokeTaskAsync(async () => ...) instead of InvokeAsync(async () => ...) when invoking tasks using the IDispatcherService.",
-            messageFormat: "Use InvokeTaskAsync instead.",
+            title: "Use InvokeTaskAsync(async () => ...) instead of InvokeAsync(async () => ...) when invoking tasks using the IDispatcherService",
+            messageFormat: "Use InvokeTaskAsync instead",
             category: AnalyzerCategory.MVVM,
             defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true,
@@ -15,8 +15,8 @@
 
         internal static readonly DiagnosticDescriptor CTL0002_UseRaisePropertyChangedWithNameOf = Create(
             id: "CTL0002",
-            title: "Use RaisePropertyChanged(nameof(MyProperty)) instead of RaisePropertyChanged(() => MyProperty).",
-            messageFormat: "Use RaisePropertyChanged(nameof(PropertyName)) instead.",
+            title: "Use RaisePropertyChanged(nameof(MyProperty)) instead of RaisePropertyChanged(() => MyProperty)",
+            messageFormat: "Use RaisePropertyChanged(nameof(PropertyName)) instead",
             category: AnalyzerCategory.Core,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
