@@ -32,15 +32,15 @@
                     return;
                 }
 
-                if (context.CancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
                 var supresssionDescriptor = SupportedSuppressions.FirstOrDefault();
 
                 foreach (var diagnostic in context.ReportedDiagnostics)
                 {
+                    if (context.CancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     var diagnosticSourceSyntaxTree = diagnostic.Location.SourceTree;
 
                     if (diagnosticSourceSyntaxTree is null || !diagnostic.Location.IsInSource)
@@ -122,11 +122,6 @@
                     if (IsAnyExposedPropertyDeclarationMatch(exposedMarkedDeclarations, exposeAttributeType, propertyName, rootSemantic, context.CancellationToken))
                     {
                         context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
-                    }
-
-                    if (context.CancellationToken.IsCancellationRequested)
-                    {
-                        return;
                     }
                 }
             }
