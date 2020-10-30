@@ -12,27 +12,24 @@
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IDE0051OnPropertyChangeSupressor : DiagnosticSuppressor
     {
-        private static readonly string FodyBaseClassLookupName = "ObservableObject";
-        private static readonly string FodyAttributeLookupName = "Expose";
+        private static readonly string CatelBaseClassLookupName = "ObservableObject";
+        private static readonly string CatelFodyAttributeLookupName = "Expose";
 
         public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions { get; } = ImmutableArray.Create(
-            new SuppressionDescriptor("CTLS0001", "IDE0051", "Supress IDE0051 on methods used for Fody INotifyPropertyChanged interception")
+            new SuppressionDescriptor("CTLS0001", "IDE0051", "Supress IDE0051 on methods used for automatic property change callback generation")
         );
 
         public override void ReportSuppressions(SuppressionAnalysisContext context)
         {
             try
             {
-                // Check fody assembly
-                var fodyType = context.Compilation.GetTypeByMetadataName("PropertyChanged.AddINotifyPropertyChangedInterfaceAttribute");
+                // Get expose attribute instance and check Catel.Fody assembly
+                var exposeAttributeType = context.Compilation.GetTypeByMetadataName("Catel.Fody.ExposeAttribute");
 
-                if (fodyType is null)
+                if (exposeAttributeType is null)
                 {
                     return;
                 }
-
-                // Get expose attribute instance
-                var fodyExposeType = context.Compilation.GetTypeByMetadataName("Catel.Fody.ExposeAttribute");
 
                 var supresssionDescriptor = SupportedSuppressions.FirstOrDefault();
 
@@ -61,7 +58,7 @@
                         continue;
                     }
 
-                    if (!containerClassSymbol.InheritsFrom(FodyBaseClassLookupName))
+                    if (!containerClassSymbol.InheritsFrom(CatelBaseClassLookupName))
                     {
                         continue;
                     }
@@ -70,71 +67,39 @@
 
                     var accessModifierNode = targetSyntax.ChildTokens().FirstOrDefault(x => x.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword));
 
+                    // Check agains "None" kine empty token
                     if (!accessModifierNode.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword))
                     {
                         // Skip non-private
                         continue;
                     }
 
-                    if (targetSymbol is IMethodSymbol method && method.Name.StartsWith("On") && method.Name.EndsWith("Changed"))
+                    if (!(targetSymbol is IMethodSymbol method) || !method.Name.StartsWith("On") || !method.Name.EndsWith("Changed"))
                     {
-                        var propertyName = method.Name.ReplaceFirst("On", "").ReplaceLast("Changed", "");
+                        continue;
+                    }
+                    var propertyName = method.Name.ReplaceFirst("On", string.Empty).ReplaceLast("Changed", string.Empty);
 
-                        // Search for property
-                        // Step 1: Search by property name through class properties
-                        // Step 2: Try to check Expose attributes:
-                        //  - arguments passed to ctor
-                        //  - named arguments
-                        // This call is more expensive than queries on syntax tree
+                    // Search for property
+                    // Step 1: Search by property name through class properties
+                    // Step 2: Try to check Expose attributes:
+                    //  - arguments passed to ctor
+                    //  - named arguments
+                    // This call is more expensive than queries on syntax tree
 
-                        if (containerClassSymbol.TryFindProperty(propertyName, out var weavedPropertySymbol))
-                        {
-                            context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
-                            return;
-                        }
+                    if (containerClassSymbol.TryFindProperty(propertyName, out var weavedPropertySymbol))
+                    {
+                        context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
+                        return;
+                    }
 
-                        if (fodyExposeType is null)
-                        {
-                            continue;
-                        }
+                    var exposedMarkedDeclarations = from descendantNode in containerClassSyntax.DescendantNodes(x => x is ClassDeclarationSyntax || x is PropertyDeclarationSyntax || x is AttributeListSyntax)
+                                                    where descendantNode is AttributeSyntax && string.Equals(descendantNode.GetIdentifier(), CatelFodyAttributeLookupName)
+                                                    select descendantNode.FirstAncestor<PropertyDeclarationSyntax>();
 
-                        var exposedMarkedDeclarations = from descendantNode in containerClassSyntax.DescendantNodes(x => x is ClassDeclarationSyntax || x is PropertyDeclarationSyntax || x is AttributeListSyntax)
-                                                        where descendantNode is AttributeSyntax && string.Equals(GetIdentifier(descendantNode as AttributeSyntax), FodyAttributeLookupName)
-                                                        select descendantNode.FirstAncestor<PropertyDeclarationSyntax>();
-
-                        foreach (var property in exposedMarkedDeclarations.Distinct())
-                        {
-                            var propertySymbol = rootSemantic.GetDeclaredSymbol(property, default);
-
-                            var exposeAttributesList = propertySymbol.GetAttributes().Where(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, fodyExposeType)).ToList();
-
-                            foreach (var exposeAttribute in exposeAttributesList)
-                            {
-                                if (exposeAttribute.ConstructorArguments.Any())
-                                {
-                                    var constructorArgValue = exposeAttribute.ConstructorArguments.FirstOrDefault().Value.ToString();
-
-                                    if (string.Equals(constructorArgValue, propertyName))
-                                    {
-                                        context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
-                                        return;
-                                    }
-                                }
-
-                                if (exposeAttribute.NamedArguments.Any())
-                                {
-                                    var argument = exposeAttribute.NamedArguments.FirstOrDefault(arg => string.Equals(arg.Key, "propertyName"));
-
-                                    var propertyIsExposed = argument.Equals(default(KeyValuePair<string, TypedConstant>)) ? false : string.Equals(argument.Value.Value.ToString(), propertyName);
-
-                                    if (propertyIsExposed)
-                                    {
-                                        context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
-                                        return;
-                                    }
-                                }
-                            }
-                        }
+                    if (IsAnyExposedPropertyDeclarationMatch(exposedMarkedDeclarations, exposeAttributeType, propertyName, rootSemantic))
+                    {
+                        context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
                     }
                 }
             }
@@ -144,16 +109,41 @@
             }
         }
 
-        private string GetIdentifier(AttributeSyntax syntaxNode)
+        private bool IsAnyExposedPropertyDeclarationMatch(IEnumerable<PropertyDeclarationSyntax> propertyDeclarations, INamedTypeSymbol attributeTypeToMatch, string propertyName, SemanticModel model)
         {
-            if (syntaxNode is null)
+            foreach (var property in propertyDeclarations.Distinct())
             {
-                return null;
+                var propertySymbol = model.GetDeclaredSymbol(property, default);
+
+                var exposeAttributesList = propertySymbol.GetAttributes().Where(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, attributeTypeToMatch)).ToList();
+
+                foreach (var exposeAttribute in exposeAttributesList)
+                {
+                    if (exposeAttribute.ConstructorArguments.Any())
+                    {
+                        var constructorArgValue = exposeAttribute.ConstructorArguments.FirstOrDefault().Value.ToString();
+
+                        if (string.Equals(constructorArgValue, propertyName))
+                        {
+                            return true;
+                        }
+                    }
+
+                    if (exposeAttribute.NamedArguments.Any())
+                    {
+                        var argument = exposeAttribute.NamedArguments.FirstOrDefault(arg => string.Equals(arg.Key, "propertyName"));
+
+                        var propertyIsExposed = argument.Equals(default(KeyValuePair<string, TypedConstant>)) ? false : string.Equals(argument.Value.Value.ToString(), propertyName);
+
+                        if (propertyIsExposed)
+                        {
+                            return true;
+                        }
+                    }
+                }
             }
 
-            var identifierSyntax = syntaxNode.ChildNodes().Where(node => node is IdentifierNameSyntax name).FirstOrDefault() as IdentifierNameSyntax;
-
-            return identifierSyntax.Identifier.ValueText;
+            return false;
         }
     }
 }
