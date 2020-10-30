@@ -15,13 +15,28 @@
                 return;
             }
 
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             var expression = context.Node as InvocationExpressionSyntax;
             if (expression is null)
             {
                 return;
             }
 
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             if (!expression.TryGetTarget(KnownSymbols.Catel_MVVM.IDispatcherService.InvokeAsync, context.SemanticModel, context.CancellationToken, out _))
+            {
+                return;
+            }
+
+            if (context.CancellationToken.IsCancellationRequested)
             {
                 return;
             }
