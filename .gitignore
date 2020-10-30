@@ -44,6 +44,7 @@ obj
 *.vspscc
 *.xap
 .builds
+*.log
 
 # Visual C++ cache files
 ipch/
@@ -134,5 +135,12 @@ TestResults
 .github/
 BundleArtifacts/
 
+# editors
+.idea
 .vscode
+
+# fody
 FodyWeavers.xsd
+
+# Approval tests
+*.received.*

@@ -88,6 +88,11 @@
 
             foreach (var analyzer in _analyzers)
             {
+                if (context.CancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 analyzer.Value.HandleOperation(context);
             }
         }
@@ -106,6 +111,11 @@
 
             foreach (var analyzer in _analyzers)
             {
+                if (context.CancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 analyzer.Value.HandleSymbol(context);
             }
         }
@@ -124,6 +134,11 @@
 
             foreach (var analyzer in _analyzers)
             {
+                if (context.CancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 analyzer.Value.HandleSyntaxNode(context);
             }
         }

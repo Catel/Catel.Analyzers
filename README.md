@@ -1,5 +1,5 @@
-Catel
-=====
+Catel.Analyzers
+===============
 
 Name|Badge
 ---|---

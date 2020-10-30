@@ -1,11 +1,11 @@
-#tool "nuget:?package=NUnit.ConsoleRunner&version=3.9.0"
+#tool "nuget:?package=NUnit.ConsoleRunner&version=3.11.1"
 
 //-------------------------------------------------------------
 
 private static void RunTestsUsingNUnit(BuildContext buildContext, string projectName, string testTargetFramework, string testResultsDirectory)
 {
-    var testFile = string.Format("{0}/{1}/{2}.dll", GetProjectOutputDirectory(buildContext, projectName), 
-        testTargetFramework, projectName);
+    var testFile = System.IO.Path.Combine(GetProjectOutputDirectory(buildContext, projectName),
+        testTargetFramework, $"{projectName}.dll");
     var resultsFile = string.Format("{0}testresults.xml", testResultsDirectory);
 
     // Note: although the docs say you can use without array initialization, you can't
@@ -22,7 +22,9 @@ private static void RunTestsUsingNUnit(BuildContext buildContext, string project
         NoHeader = true,
         NoColor = true,
         NoResults = false,
-        X86 = string.Equals(buildContext.Tests.ProcessBit, "X86", StringComparison.OrdinalIgnoreCase)
+        X86 = string.Equals(buildContext.Tests.ProcessBit, "X86", StringComparison.OrdinalIgnoreCase),
+        Timeout = 60 * 1000, // 60 seconds
+        Workers = 1
         //Work = testResultsDirectory
     });
 
