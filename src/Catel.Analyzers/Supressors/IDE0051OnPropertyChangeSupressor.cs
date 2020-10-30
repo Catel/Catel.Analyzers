@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using System.Threading;
     using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,6 +32,11 @@
                     return;
                 }
 
+                if (context.CancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 var supresssionDescriptor = SupportedSuppressions.FirstOrDefault();
 
                 foreach (var diagnostic in context.ReportedDiagnostics)
@@ -49,13 +55,23 @@
                     // Look is class weaved by Fody
                     var containerClassSyntax = targetSyntax.FirstAncestor<ClassDeclarationSyntax>();
 
+                    if (context.CancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     var rootSemantic = context.GetSemanticModel(diagnosticSourceSyntaxTree);
-                    var containerClassSymbol = (rootSemantic.GetDeclaredSymbol(containerClassSyntax, default) as ITypeSymbol);
+                    var containerClassSymbol = (rootSemantic.GetDeclaredSymbol(containerClassSyntax, context.CancellationToken) as ITypeSymbol);
 
                     if (containerClassSymbol is null)
                     {
                         // Wrong class declaration
                         continue;
+                    }
+
+                    if (context.CancellationToken.IsCancellationRequested)
+                    {
+                        return;
                     }
 
                     if (!containerClassSymbol.InheritsFrom(CatelBaseClassLookupName))
@@ -64,6 +80,11 @@
                     }
 
                     var targetSymbol = rootSemantic.GetDeclaredSymbol(targetSyntax, context.CancellationToken);
+
+                    if (context.CancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
 
                     var accessModifierNode = targetSyntax.ChildTokens().FirstOrDefault(x => x.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword));
 
@@ -78,6 +99,7 @@
                     {
                         continue;
                     }
+
                     var propertyName = method.Name.ReplaceFirst("On", string.Empty).ReplaceLast("Changed", string.Empty);
 
                     // Search for property
@@ -97,9 +119,14 @@
                                                     where descendantNode is AttributeSyntax && string.Equals(descendantNode.GetIdentifier(), CatelFodyAttributeLookupName)
                                                     select descendantNode.FirstAncestor<PropertyDeclarationSyntax>();
 
-                    if (IsAnyExposedPropertyDeclarationMatch(exposedMarkedDeclarations, exposeAttributeType, propertyName, rootSemantic))
+                    if (IsAnyExposedPropertyDeclarationMatch(exposedMarkedDeclarations, exposeAttributeType, propertyName, rootSemantic, context.CancellationToken))
                     {
                         context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
+                    }
+
+                    if (context.CancellationToken.IsCancellationRequested)
+                    {
+                        return;
                     }
                 }
             }
@@ -109,11 +136,16 @@
             }
         }
 
-        private bool IsAnyExposedPropertyDeclarationMatch(IEnumerable<PropertyDeclarationSyntax> propertyDeclarations, INamedTypeSymbol attributeTypeToMatch, string propertyName, SemanticModel model)
+        private bool IsAnyExposedPropertyDeclarationMatch(IEnumerable<PropertyDeclarationSyntax> propertyDeclarations, INamedTypeSymbol attributeTypeToMatch, string propertyName, SemanticModel model, CancellationToken cancellationToken)
         {
             foreach (var property in propertyDeclarations.Distinct())
             {
-                var propertySymbol = model.GetDeclaredSymbol(property, default);
+                var propertySymbol = model.GetDeclaredSymbol(property, cancellationToken);
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return false;
+                }
 
                 var exposeAttributesList = propertySymbol.GetAttributes().Where(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, attributeTypeToMatch)).ToList();
 
@@ -140,6 +172,11 @@
                             return true;
                         }
                     }
+                }
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return false;
                 }
             }
 
