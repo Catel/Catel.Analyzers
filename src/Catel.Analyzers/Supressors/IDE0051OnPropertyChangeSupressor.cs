@@ -54,6 +54,10 @@
 
                     // Look is class weaved by Fody
                     var containerClassSyntax = targetSyntax.FirstAncestor<ClassDeclarationSyntax>();
+                    if (containerClassSyntax is null)
+                    {
+                        continue;
+                    }
 
                     if (context.CancellationToken.IsCancellationRequested)
                     {
@@ -148,7 +152,7 @@
                 {
                     if (exposeAttribute.ConstructorArguments.Any())
                     {
-                        var constructorArgValue = exposeAttribute.ConstructorArguments.FirstOrDefault().Value.ToString();
+                        var constructorArgValue = exposeAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
 
                         if (string.Equals(constructorArgValue, propertyName))
                         {
@@ -160,8 +164,7 @@
                     {
                         var argument = exposeAttribute.NamedArguments.FirstOrDefault(arg => string.Equals(arg.Key, "propertyName"));
 
-                        var propertyIsExposed = argument.Equals(default(KeyValuePair<string, TypedConstant>)) ? false : string.Equals(argument.Value.Value.ToString(), propertyName);
-
+                        var propertyIsExposed = argument.Equals(default(KeyValuePair<string, TypedConstant>)) ? false : string.Equals(argument.Value.Value?.ToString() ?? string.Empty, propertyName);
                         if (propertyIsExposed)
                         {
                             return true;

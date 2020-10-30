@@ -45,7 +45,7 @@
           string category,
           DiagnosticSeverity defaultSeverity,
           bool isEnabledByDefault,
-          string description = null,
+          string description = "",
           params string[] customTags)
         {
             return new DiagnosticDescriptor(

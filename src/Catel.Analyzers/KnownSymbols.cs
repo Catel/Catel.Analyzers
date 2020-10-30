@@ -14,7 +14,7 @@
             internal static readonly DispatcherServiceType IDispatcherService = new DispatcherServiceType();
         }
 
-        private static QualifiedType Create(string qualifiedName, string alias = null)
+        private static QualifiedType Create(string qualifiedName, string alias = "")
         {
             return new QualifiedType(qualifiedName, alias);
         }
