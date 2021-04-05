@@ -121,7 +121,7 @@
                     if (containerClassSymbol.TryFindProperty(propertyName, out var weavedPropertySymbol))
                     {
                         context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
-                        return;
+                        continue;
                     }
 
                     var exposedMarkedDeclarations = from descendantNode in containerClassSyntax.DescendantNodes(x => x is ClassDeclarationSyntax || x is PropertyDeclarationSyntax || x is AttributeListSyntax)
