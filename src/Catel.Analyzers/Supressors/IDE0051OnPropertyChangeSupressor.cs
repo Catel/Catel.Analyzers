@@ -34,6 +34,11 @@
 
                 var supresssionDescriptor = SupportedSuppressions.FirstOrDefault();
 
+                if (supresssionDescriptor is null)
+                {
+                    return;
+                }
+
                 foreach (var diagnostic in context.ReportedDiagnostics)
                 {
                     if (context.CancellationToken.IsCancellationRequested)
@@ -116,7 +121,7 @@
                     if (containerClassSymbol.TryFindProperty(propertyName, out var weavedPropertySymbol))
                     {
                         context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
-                        return;
+                        continue;
                     }
 
                     var exposedMarkedDeclarations = from descendantNode in containerClassSyntax.DescendantNodes(x => x is ClassDeclarationSyntax || x is PropertyDeclarationSyntax || x is AttributeListSyntax)
@@ -144,6 +149,11 @@
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return false;
+                }
+
+                if (propertySymbol is null)
+                {
+                    continue;
                 }
 
                 var exposeAttributesList = propertySymbol.GetAttributes().Where(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, attributeTypeToMatch)).ToList();

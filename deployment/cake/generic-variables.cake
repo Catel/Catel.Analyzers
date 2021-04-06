@@ -1,6 +1,6 @@
 #l "buildserver.cake"
 
-#tool "nuget:?package=GitVersion.CommandLine&version=5.3.7"
+#tool "nuget:?package=GitVersion.CommandLine&version=5.6.7"
 
 //-------------------------------------------------------------
 
@@ -125,6 +125,33 @@ public class VersionContext : BuildContextBase
     }
 
     public bool ClearCache { get; set; }
+
+    private string _major;
+
+    public string Major
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(_major))
+            {
+                _major = string.Empty;
+
+                for (int i = 0; i < MajorMinorPatch.Length; i++)
+                {
+                    var character = MajorMinorPatch[i];
+                    if (!char.IsDigit(character))
+                    {
+                        break;
+                    }
+
+                    _major += character.ToString();
+                }
+            }
+
+            return _major;
+        }
+    }
+
     public string MajorMinorPatch { get; set; }
     public string FullSemVer { get; set; }
     public string NuGet { get; set; }
@@ -324,6 +351,7 @@ public class SonarQubeContext : BuildContextBase
     public bool IsDisabled { get; set; }
     public bool SupportBranches { get; set; }
     public string Url { get; set; }
+    public string Organization { get; set; }
     public string Username { get; set; }
     public string Password { get; set; }
     public string Project { get; set; }
@@ -429,6 +457,7 @@ private GeneralContext InitializeGeneralContext(BuildContext buildContext, IBuil
         IsDisabled = buildContext.BuildServer.GetVariableAsBool("SonarDisabled", false, showValue: true),
         SupportBranches = buildContext.BuildServer.GetVariableAsBool("SonarSupportBranches", true, showValue: true),
         Url = buildContext.BuildServer.GetVariable("SonarUrl", showValue: true),
+        Organization = buildContext.BuildServer.GetVariable("SonarOrganization", showValue: true),
         Username = buildContext.BuildServer.GetVariable("SonarUsername", showValue: false),
         Password = buildContext.BuildServer.GetVariable("SonarPassword", showValue: false),
         Project = buildContext.BuildServer.GetVariable("SonarProject", data.Solution.Name, showValue: true)
