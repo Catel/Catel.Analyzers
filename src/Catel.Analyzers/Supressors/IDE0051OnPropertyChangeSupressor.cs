@@ -13,8 +13,8 @@
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class IDE0051OnPropertyChangeSupressor : DiagnosticSuppressor
     {
-        private static readonly string CatelBaseClassLookupName = "ObservableObject";
-        private static readonly string CatelFodyAttributeLookupName = "Expose";
+        private const string CatelBaseClassLookupName = "ObservableObject";
+        private const string CatelFodyAttributeLookupName = "Expose";
 
         public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions { get; } = ImmutableArray.Create(
             new SuppressionDescriptor("CTLS0001", "IDE0051", "Supress IDE0051 on methods used for automatic property change callback generation")
@@ -104,7 +104,7 @@
                         continue;
                     }
 
-                    if (!(targetSymbol is IMethodSymbol method) || !method.Name.StartsWith("On") || !method.Name.EndsWith("Changed"))
+                    if (!(targetSymbol is IMethodSymbol method) || !method.Name.StartsWith("On", StringComparison.OrdinalIgnoreCase) || !method.Name.EndsWith("Changed", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
@@ -125,7 +125,7 @@
                     }
 
                     var exposedMarkedDeclarations = from descendantNode in containerClassSyntax.DescendantNodes(x => x is ClassDeclarationSyntax || x is PropertyDeclarationSyntax || x is AttributeListSyntax)
-                                                    where descendantNode is AttributeSyntax && string.Equals(descendantNode.GetIdentifier(), CatelFodyAttributeLookupName)
+                                                    where descendantNode is AttributeSyntax && string.Equals(descendantNode.GetIdentifier(), CatelFodyAttributeLookupName, StringComparison.OrdinalIgnoreCase)
                                                     select descendantNode.FirstAncestor<PropertyDeclarationSyntax>();
 
                     if (IsAnyExposedPropertyDeclarationMatch(exposedMarkedDeclarations, exposeAttributeType, propertyName, rootSemantic, context.CancellationToken))
@@ -134,13 +134,13 @@
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
-        private bool IsAnyExposedPropertyDeclarationMatch(IEnumerable<PropertyDeclarationSyntax> propertyDeclarations, INamedTypeSymbol attributeTypeToMatch, string propertyName, SemanticModel model, CancellationToken cancellationToken)
+        private static bool IsAnyExposedPropertyDeclarationMatch(IEnumerable<PropertyDeclarationSyntax> propertyDeclarations, INamedTypeSymbol attributeTypeToMatch, string propertyName, SemanticModel model, CancellationToken cancellationToken)
         {
             foreach (var property in propertyDeclarations.Distinct())
             {
@@ -164,7 +164,7 @@
                     {
                         var constructorArgValue = exposeAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
 
-                        if (string.Equals(constructorArgValue, propertyName))
+                        if (string.Equals(constructorArgValue, propertyName, StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
                         }
@@ -172,9 +172,9 @@
 
                     if (exposeAttribute.NamedArguments.Any())
                     {
-                        var argument = exposeAttribute.NamedArguments.FirstOrDefault(arg => string.Equals(arg.Key, "propertyName"));
+                        var argument = exposeAttribute.NamedArguments.FirstOrDefault(arg => string.Equals(arg.Key, "propertyName", StringComparison.OrdinalIgnoreCase));
 
-                        var propertyIsExposed = argument.Equals(default(KeyValuePair<string, TypedConstant>)) ? false : string.Equals(argument.Value.Value?.ToString() ?? string.Empty, propertyName);
+                        var propertyIsExposed = argument.Equals(default(KeyValuePair<string, TypedConstant>)) ? false : string.Equals(argument.Value.Value?.ToString() ?? string.Empty, propertyName, StringComparison.OrdinalIgnoreCase);
                         if (propertyIsExposed)
                         {
                             return true;
