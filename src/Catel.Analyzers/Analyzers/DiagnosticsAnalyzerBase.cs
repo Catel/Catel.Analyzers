@@ -70,8 +70,18 @@
         {
             var typeName = $"Catel.Analyzers.{descriptor.Id}Analyzer";
             var type = Type.GetType(typeName);
+            if (type is null)
+            {
+                throw new Exception($"Cannot create analyzer from '{typeName}'");
+            }
 
-            return (IAnalyzer)Activator.CreateInstance(type);
+            var analyzer = Activator.CreateInstance(type) as IAnalyzer;
+            if (analyzer is null)
+            {
+                throw new Exception($"Cannot create analyzer from '{typeName}'");
+            }
+
+            return analyzer;
         }
 
         private void HandleOperationAction(OperationAnalysisContext context)
