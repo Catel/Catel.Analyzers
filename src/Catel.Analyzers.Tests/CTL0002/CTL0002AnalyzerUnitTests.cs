@@ -1,8 +1,8 @@
 ﻿namespace Catel.Analyzers.Tests
 {
     using Catel.Analyzers;
-    using NUnit.Framework;
     using Gu.Roslyn.Asserts;
+    using NUnit.Framework;
 
     [TestFixture]
     public class CTL0002AnalyzerUnitTests

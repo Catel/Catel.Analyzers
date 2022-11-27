@@ -19,6 +19,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="..\MethodTimeLogger.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Catel.Core" Version="5.12.22" />
     <PackageReference Include="Catel.MVVM" Version="5.12.22" />
     <PackageReference Include="Gu.Roslyn.Asserts" Version="4.3.0" PrivateAssets="all" />

@@ -1,12 +1,8 @@
 ﻿namespace Catel.Analyzers.Tests
 {
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeFixes;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using System;
     using Catel.Analyzers;
-    using NUnit.Framework;
     using Gu.Roslyn.Asserts;
+    using NUnit.Framework;
 
     [TestFixture]
     public class CTL0001AnalyzerUnitTests

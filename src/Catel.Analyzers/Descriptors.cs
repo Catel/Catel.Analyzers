@@ -22,7 +22,25 @@
             isEnabledByDefault: true,
             description: "Use RaisePropertyChanged(nameof(MyProperty)) instead of RaisePropertyChanged(() => MyProperty) to improve performance and decrease allocations.");
 
-        // TODO: Add more descriptors here
+        internal static readonly DiagnosticDescriptor CL0008_DoUseThrowIfNullForArgumentCheck = Create(
+            id: CTL0008Diagnostic.Id,
+            title: "Use ArgumentNullException.ThrowIfNull for argument check",
+            messageFormat: "Use ArgumentNullException.ThrowIfNull for argument check",
+            category: AnalyzerCategory.Core,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: @"Starting from .NET 6 use new ArgumentNullException.ThrowIfNull method instead of Catel.Argument.");
+
+
+        internal static readonly DiagnosticDescriptor CL0011_ProvideCatelLogOnThrowingException = Create(
+            id: CTL0011Diagnostic.Id,
+            title: "Provide log on throwing exception",
+            messageFormat: "Use Log.ErrorAndCreationException for throwing Exception to provide log information",
+            category: AnalyzerCategory.Core,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: "Use Log.ErrorAndCreationException for throwing Exception to provide log information.");
+
 
         /// <summary>
         /// Create a DiagnosticDescriptor, which provides description about a <see cref="T:Microsoft.CodeAnalysis.Diagnostic" />.
