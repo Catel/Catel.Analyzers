@@ -101,7 +101,7 @@
 
         protected virtual IDiagnostic ResolveAnalyzer(DiagnosticDescriptor descriptor)
         {
-            var typeName = $"CatenaLogic.Analyzers.{descriptor.Id}Diagnostic";
+            var typeName = $"Catel.Analyzers.{descriptor.Id}Diagnostic";
             var type = Type.GetType(typeName);
             if (type is null)
             {
