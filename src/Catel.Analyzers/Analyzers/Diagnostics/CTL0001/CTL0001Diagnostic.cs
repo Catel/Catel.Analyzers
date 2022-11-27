@@ -1,5 +1,6 @@
 ﻿namespace Catel.Analyzers
 {
+    using System.Threading;
     using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,7 +32,10 @@
                 return;
             }
 
-            if (!expression.TryGetTarget(KnownSymbols.Catel_MVVM.IDispatcherService.InvokeAsync, context.SemanticModel, context.CancellationToken, out _))
+            var validTarget = expression.ArgumentList is { }
+                && expression.TryGetMethodName(out var name) && name == KnownSymbols.Catel_MVVM.IDispatcherService.InvokeAsync.Name;
+
+            if (!validTarget || expression.ArgumentList is null)
             {
                 return;
             }

@@ -31,7 +31,10 @@
                 return;
             }
 
-            if (!expression.TryGetTarget(KnownSymbols.Catel_Core.ObservableObject.RaisePropertyChanged_ExpressionBased, context.SemanticModel, context.CancellationToken, out _))
+            var validTarget = expression.ArgumentList is { }
+                && expression.TryGetMethodName(out var name) && name == KnownSymbols.Catel_Core.ObservableObject.RaisePropertyChanged_ExpressionBased.Name;
+
+            if (!validTarget || expression.ArgumentList is null)
             {
                 return;
             }

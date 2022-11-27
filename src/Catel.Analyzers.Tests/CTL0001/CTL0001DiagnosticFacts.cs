@@ -46,7 +46,7 @@
         }
     }";
 
-            Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.Diagnostics(analyzer, ExpectedDiagnostic, before));
+            Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks, before));
         }
 
         [Test]
@@ -77,7 +77,7 @@
         }
     }";
 
-            Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.Diagnostics(analyzer, ExpectedDiagnostic, before));
+            Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks, before));
         }
 
         [Test]
