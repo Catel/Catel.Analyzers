@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
     using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -10,7 +9,7 @@
 
     internal abstract class DiagnosticAnalyzerBase : DiagnosticAnalyzer
     {
-        private readonly Dictionary<string, IAnalyzer> _analyzers = new Dictionary<string, IAnalyzer>();
+        private readonly Dictionary<string, IDiagnostic> _analyzers = new Dictionary<string, IDiagnostic>();
 
         protected DiagnosticAnalyzerBase()
         {
@@ -66,7 +65,7 @@
             return false;
         }
 
-        protected virtual IAnalyzer ResolveAnalyzer(DiagnosticDescriptor descriptor)
+        protected virtual IDiagnostic ResolveAnalyzer(DiagnosticDescriptor descriptor)
         {
             var typeName = $"Catel.Analyzers.{descriptor.Id}Analyzer";
             var type = Type.GetType(typeName);
@@ -75,7 +74,7 @@
                 throw new Exception($"Cannot create analyzer from '{typeName}'");
             }
 
-            var analyzer = Activator.CreateInstance(type) as IAnalyzer;
+            var analyzer = Activator.CreateInstance(type) as IDiagnostic;
             if (analyzer is null)
             {
                 throw new Exception($"Cannot create analyzer from '{typeName}'");

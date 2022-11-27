@@ -2,7 +2,7 @@
 {
     using Microsoft.CodeAnalysis.Diagnostics;
 
-    internal interface IAnalyzer
+    internal interface IDiagnostic
     {
         void HandleOperation(OperationAnalysisContext context);
 
