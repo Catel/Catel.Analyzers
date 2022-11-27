@@ -10,7 +10,7 @@
 
     internal abstract class DiagnosticAnalyzerBase : DiagnosticAnalyzer
     {
-        private readonly Dictionary<string, IDiagnostic> _analyzers = new Dictionary<string, IDiagnostic>();
+        private readonly Dictionary<string, IDiagnostic> _analyzers = new();
 
         protected DiagnosticAnalyzerBase()
         {

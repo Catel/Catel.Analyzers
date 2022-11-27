@@ -5,9 +5,9 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class CTL0001AnalyzerUnitTests
+    public class CTL0001DiagnosticFacts
     {
-        private static readonly MethodsAnalyzer Analyzer = new MethodsAnalyzer();
+        private static readonly MethodsAnalyzer Analyzer = new();
         private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks);
 
         [Test]
@@ -46,7 +46,7 @@
         }
     }";
 
-            RoslynAssert.Valid(Analyzer, before);
+            Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.Diagnostics(analyzer, ExpectedDiagnostic, before));
         }
 
         [Test]
@@ -77,7 +77,7 @@
         }
     }";
 
-            RoslynAssert.Valid(Analyzer, before);
+            Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.Diagnostics(analyzer, ExpectedDiagnostic, before));
         }
 
         [Test]
@@ -108,7 +108,7 @@
         }
     }";
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, before);
+            Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.Diagnostics(analyzer, ExpectedDiagnostic, before));
         }
 
         [Test]
@@ -144,7 +144,7 @@
         }
     }";
 
-            RoslynAssert.Diagnostics(Analyzer, ExpectedDiagnostic, before);
+            Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.Diagnostics(analyzer, ExpectedDiagnostic, before));
         }
     }
 }

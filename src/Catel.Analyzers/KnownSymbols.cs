@@ -6,17 +6,12 @@
     {
         internal static class Catel_Core
         {
-            internal static readonly ObservableObjectType ObservableObject = new ObservableObjectType();
+            internal static readonly ObservableObjectType ObservableObject = new();
         }
 
         internal static class Catel_MVVM
         {
-            internal static readonly DispatcherServiceType IDispatcherService = new DispatcherServiceType();
-        }
-
-        private static QualifiedType Create(string qualifiedName, string alias = "")
-        {
-            return new QualifiedType(qualifiedName, alias);
+            internal static readonly DispatcherServiceType IDispatcherService = new();
         }
     }
 

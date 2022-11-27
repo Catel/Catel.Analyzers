@@ -9,15 +9,17 @@
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     internal class ExceptionsAnalyzer : DiagnosticAnalyzerBase
     {
+        private static readonly SyntaxKind[] TriggerSyntaxNodes = new[]
+        {
+            SyntaxKind.ThrowStatement,
+        };
+
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.CL0011_ProvideCatelLogOnThrowingException);
 
         protected override SyntaxKind[] GetTriggerSyntaxNodes()
         {
-            return new[]
-            {
-                SyntaxKind.ThrowStatement,
-            };
+            return TriggerSyntaxNodes;
         }
 
         protected override SymbolKind[] GetTriggerSymbols()
