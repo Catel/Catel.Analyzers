@@ -15,7 +15,7 @@
         };
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.CL0011_ProvideCatelLogOnThrowingException);
+            ImmutableArray.Create(Descriptors.CTL0011_ProvideCatelLogOnThrowingException);
 
         protected override SyntaxKind[] GetTriggerSyntaxNodes()
         {

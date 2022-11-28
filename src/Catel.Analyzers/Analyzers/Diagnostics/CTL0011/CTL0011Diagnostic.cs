@@ -30,7 +30,7 @@
                 return;
             }
 
-            context.ReportDiagnostic(Diagnostic.Create(Descriptors.CL0011_ProvideCatelLogOnThrowingException, context.Node.GetLocation()));
+            context.ReportDiagnostic(Diagnostic.Create(Descriptors.CTL0011_ProvideCatelLogOnThrowingException, context.Node.GetLocation()));
         }
     }
 }

@@ -18,7 +18,7 @@
     internal class CTL0011CodeFixProvider : CodeFixProvider
     {
         public const string Title = "Replace with Log.ErrorAndCreateException";
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Descriptors.CL0011_ProvideCatelLogOnThrowingException.Id);
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Descriptors.CTL0011_ProvideCatelLogOnThrowingException.Id);
 
         public override FixAllProvider? GetFixAllProvider()
         {

@@ -8,7 +8,7 @@
     {
         public class Reports_Diagnostic
         {
-            private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.CL0011_ProvideCatelLogOnThrowingException);
+            private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.CTL0011_ProvideCatelLogOnThrowingException);
 
             [TestCase]
             public void InvalidCode_Exception_Thrown()
@@ -56,7 +56,7 @@ namespace ConsoleApp1
     }
 }";
 
-                Solution.Verify<ExceptionsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CL0011_ProvideCatelLogOnThrowingException, before));
+                Solution.Verify<ExceptionsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0011_ProvideCatelLogOnThrowingException, before));
             }
 
             [TestCase]
@@ -82,7 +82,7 @@ namespace ConsoleApp1
     }
 }";
 
-                Solution.Verify<ExceptionsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CL0011_ProvideCatelLogOnThrowingException, before));
+                Solution.Verify<ExceptionsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0011_ProvideCatelLogOnThrowingException, before));
             }
 
             [TestCase]
@@ -114,7 +114,7 @@ namespace ConsoleApp1
     }
 }";
 
-                Solution.Verify<ExceptionsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CL0011_ProvideCatelLogOnThrowingException, before));
+                Solution.Verify<ExceptionsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0011_ProvideCatelLogOnThrowingException, before));
             }
 
             [TestCase]
@@ -140,7 +140,7 @@ namespace ConsoleApp1
     }
 }";
 
-                Solution.Verify<ExceptionsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CL0011_ProvideCatelLogOnThrowingException, before));
+                Solution.Verify<ExceptionsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0011_ProvideCatelLogOnThrowingException, before));
             }
         }
     }

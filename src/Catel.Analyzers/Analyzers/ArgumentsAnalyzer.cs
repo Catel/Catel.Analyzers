@@ -27,7 +27,7 @@
 
         /// <inheritdoc/>
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.CL0008_DoUseThrowIfNullForArgumentCheck);
+            ImmutableArray.Create(Descriptors.CTL0008_DoUseThrowIfNullForArgumentCheck);
 
         protected override OperationKind[] GetTriggerOperations()
         {

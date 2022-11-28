@@ -20,7 +20,7 @@
         public const string Title_CS0008 = "Replace with ArgumentNullException.ThrowIfNull";
         public const string Title_CS0103 = "Add using System";
 
-        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Descriptors.CL0008_DoUseThrowIfNullForArgumentCheck.Id, NameDoesNotExistInCurrentContextId);
+        public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Descriptors.CTL0008_DoUseThrowIfNullForArgumentCheck.Id, NameDoesNotExistInCurrentContextId);
         public override FixAllProvider? GetFixAllProvider()
         {
             return WellKnownFixAllProviders.BatchFixer;

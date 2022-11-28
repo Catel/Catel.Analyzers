@@ -8,7 +8,7 @@
     {
         public class Reports_Diagnostic
         {
-            private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.CL0008_DoUseThrowIfNullForArgumentCheck);
+            private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.CTL0008_DoUseThrowIfNullForArgumentCheck);
 
             [TestCase]
             public void InvalidCode_ArgumentCheck_In_Ctor()
@@ -74,7 +74,7 @@ namespace ConsoleApp1
         }
     }
 }";
-                Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CL0008_DoUseThrowIfNullForArgumentCheck, before));
+                Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0008_DoUseThrowIfNullForArgumentCheck, before));
             }
 
             [TestCase]
@@ -93,7 +93,7 @@ namespace ConsoleApp1
         }
     }
 }";
-                Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CL0008_DoUseThrowIfNullForArgumentCheck, before));
+                Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0008_DoUseThrowIfNullForArgumentCheck, before));
             }
         }
     }
