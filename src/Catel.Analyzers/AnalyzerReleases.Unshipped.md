@@ -4,5 +4,3 @@
 ### New Rules
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-CTL0001 | Catel.Analyzers.MVVM | Error | Use InvokeTaskAsync(async () => ...) instead of InvokeAsync(async () => ...) when invoking tasks using the IDispatcherService
-CTL0002 | Catel.Analyzers.Core | Warning | Use RaisePropertyChanged(nameof(MyProperty)) instead of RaisePropertyChanged(() => MyProperty)

@@ -5,7 +5,7 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
 
-    public class CTL0002Analyzer : AnalyzerBase
+    public class CTL0002Diagnostic : DiagnosticBase
     {
         public override void HandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {
@@ -31,7 +31,10 @@
                 return;
             }
 
-            if (!expression.TryGetTarget(KnownSymbols.Catel_Core.ObservableObject.RaisePropertyChanged_ExpressionBased, context.SemanticModel, context.CancellationToken, out _))
+            var validTarget = expression.ArgumentList is { }
+                && expression.TryGetMethodName(out var name) && name == KnownSymbols.Catel_Core.ObservableObject.RaisePropertyChanged_ExpressionBased.Name;
+
+            if (!validTarget || expression.ArgumentList is null)
             {
                 return;
             }
