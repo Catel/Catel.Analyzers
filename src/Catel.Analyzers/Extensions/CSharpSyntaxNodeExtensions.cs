@@ -2,7 +2,6 @@
 {
     using System.Linq;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     public static class CSharpSyntaxNodeExtensions
