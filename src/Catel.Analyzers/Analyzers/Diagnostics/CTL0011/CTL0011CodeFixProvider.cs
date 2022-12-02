@@ -1,11 +1,11 @@
 ﻿namespace Catel.Analyzers
 {
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Gu.Roslyn.AnalyzerExtensions;
-    using Gu.Roslyn.CodeFixExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
@@ -61,118 +61,56 @@
 
             if (arguments is not null)
             {
-                logErrorExpression = logErrorExpression.WithArgumentList(arguments);
+                if (arguments.Arguments.Count <= 1)
+                {
+                    logErrorExpression = logErrorExpression.WithArgumentList(arguments);
+                }
+                else
+                {
+                    var logErrorMethodArguments = SF.ArgumentList();
+
+                    // Assume 'string message' is last string parameter in Exception ctor aguments;
+                    var messageArgument = arguments.Arguments.LastOrDefault(x => x.Expression.IsKind(SyntaxKind.InterpolatedStringExpression)
+                    || x.Expression.IsKind(SyntaxKind.StringLiteralExpression));
+                    if (messageArgument is null)
+                    {
+                        // just wrap as callback
+                        var callbackFunctor =
+                            SF.Argument(SF.SimpleLambdaExpression(SF.Parameter(SF.ParseToken("_")), exceptionCreationSyntax));
+
+                        logErrorMethodArguments = logErrorMethodArguments.AddArguments(callbackFunctor);
+                    }
+                    else
+                    {
+                        // callback + message parameter: Log.ErrorAndCreateException(message => createExpFunc, message)
+                        var exceptionCreationArguments = arguments.Arguments.ToList();
+                        
+                        // Replace with lambda parameter
+                        var messageArgumentIndex = exceptionCreationArguments.IndexOf(messageArgument);
+                        if (messageArgumentIndex != -1)
+                        {
+                            exceptionCreationArguments[messageArgumentIndex] = SF.Argument(SF.ParseExpression("message"));
+
+                            var callbackRightPart = SF.ObjectCreationExpression(exceptionCreationSyntax.Type)
+                                .WithArgumentList(exceptionCreationArguments.ToArgumentList());
+
+                            // Generate new argument lists and expression
+                            logErrorMethodArguments = logErrorMethodArguments.AddArguments(
+                                SF.Argument(SF.SimpleLambdaExpression(SF.Parameter(SF.ParseToken("message")), callbackRightPart)),
+                                SF.Argument(SF.ParseExpression($"{messageArgument.ToFullString()}")));
+                        }
+                    }
+
+                    logErrorExpression = SF.InvocationExpression(SF.ParseExpression($"Log.ErrorAndCreateException"))
+                        .WithArgumentList(logErrorMethodArguments);
+                }
             }
 
             var documentEditor = await DocumentEditor.CreateAsync(document, cancellationToken);
             documentEditor.ReplaceNode(exceptionCreationSyntax, logErrorExpression);
 
             document = documentEditor.GetChangedDocument();
-
-            var sm = await document.GetSemanticModelAsync(cancellationToken);
-            if (sm is null)
-            {
-                return document;
-            }
-
-            var classSpan = throwStatement.FirstAncestor<ClassDeclarationSyntax>()?.FullSpan ?? default;
-
-            var classDeclaration = (await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false))?.FindNode(classSpan) as ClassDeclarationSyntax;
-            if (classDeclaration is null)
-            {
-                return document;
-            }
-
-            var updatedDocument = await EnsureLogStaticFieldForClassOnRootAsync(classDeclaration, sm, document, cancellationToken).ConfigureAwait(false);
-
-            return updatedDocument;
-        }
-
-        private static async Task<Document> EnsureLogStaticFieldForClassOnRootAsync(
-            ClassDeclarationSyntax classDeclaration,
-            SemanticModel semantic,
-            Document document,
-            CancellationToken cancellationToken)
-        {
-            var fieldDeclaraions = classDeclaration.ChildNodes().Where(x => x.IsKind(SyntaxKind.FieldDeclaration)).ToList();
-            var classSymbol = semantic.GetDeclaredSymbol(classDeclaration, cancellationToken);
-            if (classSymbol is not INamedTypeSymbol typeSymbol)
-            {
-                return document;
-            }
-
-            if (typeSymbol.TryFindFirstMember<IFieldSymbol>(field =>
-            {
-                return field.IsStatic && field.Type.Name == "ILog" && field.Name == "Log";
-            }, out var logStaticField))
-            {
-                return document;
-            }
-
-            var editor = await DocumentEditor.CreateAsync(document, cancellationToken).ConfigureAwait(false);
-
-            // Add namespace
-            var root = editor.GetChangedRoot();
-            var namespaceDeclaration = root.DescendantNodes().FirstOrDefault(x => x is NamespaceDeclarationSyntax) as NamespaceDeclarationSyntax;
-
-            NamespaceDeclarationSyntax? updatedNamespace = null;
-            // Note: we expect using are part of NamespaceDeclaration, not a root
-            if (namespaceDeclaration is null)
-            {
-                return document;
-            }
-
-            if (!namespaceDeclaration.Usings.Any(x => string.Equals("Catel.Logging", x.Name.ToFullString())))
-            {
-                updatedNamespace = namespaceDeclaration.AddUsings(
-                    SF.UsingDirective(SF.ParseName("Catel.Logging")).NormalizeWhitespace(elasticTrivia: true).WithTrailingElasticLineFeed());
-            }
-
-            if (updatedNamespace is not null)
-            {
-                editor.ReplaceNode(namespaceDeclaration, updatedNamespace);
-            }
-
-            // Replacing namespace node can change root
-            // In that way we can't locate class node to insert Log static field in same batch
-            // Recreate editor for further changes
-            editor = await DocumentEditor.CreateAsync(editor.GetChangedDocument()).ConfigureAwait(false);
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return document;
-            }
-
-            // Create Log member
-            var logStaticFieldSyntax = SF.FieldDeclaration(
-                SF.VariableDeclaration(SF.ParseTypeName("ILog"),
-                SF.SeparatedList(new[]
-                {
-                    SF.VariableDeclarator(SF.Identifier("Log"))
-                    .WithInitializer(SF.EqualsValueClause(SF.InvocationExpression(SF.IdentifierName("LogManager.GetCurrentClassLogger"))))
-                })))
-                .AddModifiers(
-                SF.Token(SyntaxKind.PrivateKeyword), SF.Token(SyntaxKind.StaticKeyword), SF.Token(SyntaxKind.ReadOnlyKeyword));
-
-            var equalClassDeclarationSyntax = editor.OriginalRoot.DescendantNodes()
-                .FirstOrDefault(syntax =>
-                {
-                    if (syntax is ClassDeclarationSyntax syntaxClass)
-                    {
-                        return string.Equals(syntaxClass.Identifier.ValueText, classDeclaration.Identifier.ValueText);
-                    }
-
-                    return false;
-                });
-
-            editor.InsertMembers(equalClassDeclarationSyntax, 0, new[]
-            {
-                logStaticFieldSyntax
-            });
-
-            var changedDocument = editor.GetChangedDocument();
-
-            return changedDocument;
+            return document;
         }
     }
 }

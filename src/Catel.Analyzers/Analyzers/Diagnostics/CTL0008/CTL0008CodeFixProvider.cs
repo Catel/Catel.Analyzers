@@ -144,7 +144,13 @@
 
             var argumentNames = argumentList.Arguments.Select(x =>
             {
-                if (x.DescendantNodes().FirstOrDefault(x => x.IsKind(SyntaxKind.IdentifierName)) is IdentifierNameSyntax identifierNameSyntax)
+                var argumentSyntax = x;
+                if (argumentSyntax.Expression is InvocationExpressionSyntax childInvocation)
+                {
+                    return GetArgumentNames(childInvocation).FirstOrDefault() ?? string.Empty;
+                }
+
+                if (argumentSyntax.DescendantNodes().FirstOrDefault(x => x.IsKind(SyntaxKind.IdentifierName)) is IdentifierNameSyntax identifierNameSyntax)
                 {
                     return identifierNameSyntax.Identifier.ValueText;
                 }

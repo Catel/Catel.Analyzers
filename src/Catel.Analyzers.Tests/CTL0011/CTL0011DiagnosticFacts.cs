@@ -15,9 +15,14 @@
             {
                 var before = @"
 namespace ConsoleApp1
-{
+{    
+    using Catel;
+    using Catel.Logging;
+
     internal class Program
-    {
+    {        
+        private static readonly ILog Log = LogManager.GetCurrentClassLogger();
+
         public Program()
         {
 
@@ -37,13 +42,44 @@ namespace ConsoleApp1
         public class Reposts_NoDiagnostic
         {
             [TestCase]
+            public void ValidCode_NoClassLogger()
+            {
+                var before = @"
+namespace ConsoleApp1
+{    
+    using Catel;
+    using Catel.Logging;
+
+    internal class Program
+    {
+        public Program()
+        {
+
+        }
+
+        public async Task MakeError()
+        {
+            throw new InvalidOperationException();
+        }
+    }
+}";
+                Solution.Verify<ExceptionsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0011_ProvideCatelLogOnThrowingException, before));
+
+            }
+
+            [TestCase]
             public void ValidCode_NoMessageProvided()
             {
                 var before = @"
 namespace ConsoleApp1
 {
+    using Catel;
+    using Catel.Logging;
+
     internal class Program
     {
+        private static readonly ILog Log = LogManager.GetCurrentClassLogger();
+
         public Program()
         {
 
@@ -65,7 +101,9 @@ namespace ConsoleApp1
                 var before = @"
 namespace ConsoleApp1
 {
+    using Catel;
     using Catel.Logging;
+
     internal class Program
     {
         private static readonly ILog Log = LogManager.GetCurrentClassLogger();
@@ -91,7 +129,9 @@ namespace ConsoleApp1
                 var before = @"
 namespace ConsoleApp1
 {
+    using Catel;
     using Catel.Logging;
+
     internal class Program
     {
         private static readonly ILog Log = LogManager.GetCurrentClassLogger();
@@ -123,7 +163,9 @@ namespace ConsoleApp1
                 var before = @"
 namespace ConsoleApp1
 {
+    using Catel;
     using Catel.Logging;
+
     internal class Program
     {
         private static readonly ILog Log = LogManager.GetCurrentClassLogger();
