@@ -7,6 +7,7 @@
         internal static class Catel_Core
         {
             internal static readonly ObservableObjectType ObservableObject = new();
+            internal static readonly LogType Log = new();
         }
 
         internal static class Catel_MVVM
@@ -34,6 +35,15 @@
             : base("Catel.Services.IDispatcherService")
         {
             InvokeAsync = new QualifiedMethod(this, "InvokeAsync");
+        }
+    }
+
+    internal class LogType : QualifiedType
+    {
+        public LogType()
+            : base("Catel.Logging.ILog")
+        {
+
         }
     }
 }

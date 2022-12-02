@@ -74,6 +74,39 @@ namespace ConsoleApp1
 
                 Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.CodeFix(Fixer, ExpectedDiagnostic.Create("CS0103"), before, after));
             }
+
+            [TestCase]
+            public void InvalidCode_NameOf()
+            {
+                var before = @"
+namespace ConsoleApp1
+{
+    using Catel;
+
+    internal class Program
+    {
+        public Program(object arg)
+        {
+            ↓Argument.IsNotNull(nameof(arg), arg);
+        }
+    }
+}";
+                var after = @"
+namespace ConsoleApp1
+{
+    using Catel;
+
+    internal class Program
+    {
+        public Program(object arg)
+        {
+            ArgumentNullException.ThrowIfNull(arg);
+        }
+    }
+}";
+
+                Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.CodeFix(analyzer, Fixer, before, after));
+            }
         }
     }
 }
