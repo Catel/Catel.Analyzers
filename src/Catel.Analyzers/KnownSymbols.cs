@@ -54,7 +54,7 @@
 
     internal class ExposeAttributeType : QualifiedType
     {
-        public ExposeAttributeType() 
+        public ExposeAttributeType()
             : base("Catel.Fody.ExposeAttribute")
         {
         }

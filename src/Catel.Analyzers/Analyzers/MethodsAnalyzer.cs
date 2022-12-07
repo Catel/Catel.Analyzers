@@ -15,13 +15,12 @@
 
         protected override bool ShouldHandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {
-            var memberSymbol = context.ContainingSymbol as ISymbol;
-            if (memberSymbol is null || memberSymbol.Kind != SymbolKind.Method)
-            {
-                return false;
-            }
+            return context.ContainingSymbol is not ISymbol memberSymbol || memberSymbol.Kind != SymbolKind.Method;
+        }
 
-            return true;
+        protected override bool ShouldHandleSymbol(SymbolAnalysisContext context)
+        {
+            return context.Symbol.Kind == SymbolKind.Method;
         }
     }
 }

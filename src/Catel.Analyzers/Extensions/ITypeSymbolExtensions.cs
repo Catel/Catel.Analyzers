@@ -1,7 +1,10 @@
 ﻿namespace Catel.Analyzers
 {
     using System;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     public static class ITypeSymbolExtensions
     {
@@ -32,6 +35,20 @@
             }
 
             return false;
+        }
+
+        public static ClassDeclarationSyntax? GetClassDeclarationSyntax(this ITypeSymbol typeSymbol, CancellationToken cancellationToken)
+        {
+            foreach (var linkedSyntax in typeSymbol.DeclaringSyntaxReferences)
+            {
+                var declraingSyntax = linkedSyntax.GetSyntax(cancellationToken);
+                if (declraingSyntax.IsKind(SyntaxKind.ClassDeclaration))
+                {
+                    return declraingSyntax as ClassDeclarationSyntax;
+                }
+            }
+
+            return null;
         }
     }
 }
