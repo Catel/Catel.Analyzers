@@ -15,7 +15,7 @@
 
         protected override bool ShouldHandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {
-            return context.ContainingSymbol is not ISymbol memberSymbol || memberSymbol.Kind != SymbolKind.Method;
+            return context.ContainingSymbol is ISymbol memberSymbol && memberSymbol.Kind == SymbolKind.Method;
         }
 
         protected override bool ShouldHandleSymbol(SymbolAnalysisContext context)

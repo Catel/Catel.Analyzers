@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using Catel.MVVM;
     using Gu.Roslyn.Asserts;
     using NUnit.Framework;
 
@@ -26,10 +27,12 @@
                     .WithAliases(new[] { "global", "System" });
                 var transitiveMetadataReferences = MetadataReferences.Transitive(typeof(ValidCodeWithAllAnalyzers).Assembly);
                 var catelMetadataReferences = MetadataReferences.CreateFromAssembly(typeof(Logging.Log).Assembly);
+                var catelMVVMMetadataReferences = MetadataReferences.CreateFromAssembly(typeof(ViewModelBase).Assembly);
 
                 var allMetadata = transitiveMetadataReferences.Append(debugMetadataReferences)
                     .Append(systemMetadataReferences)
-                    .Append(catelMetadataReferences);
+                    .Append(catelMetadataReferences)
+                    .Append(catelMVVMMetadataReferences);
 
                 Settings.Default = Settings.Default.WithAllowedCompilerDiagnostics(AllowedCompilerDiagnostics.WarningsAndErrors)
                     .WithMetadataReferences(refs => refs.Concat(allMetadata));
