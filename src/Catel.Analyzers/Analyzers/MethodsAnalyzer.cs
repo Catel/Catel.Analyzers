@@ -10,17 +10,17 @@
         /// <inheritdoc/>
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
             ImmutableArray.Create(Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks,
-                                  Descriptors.CTL0002_UseRaisePropertyChangedWithNameOf);
+                                  Descriptors.CTL0002_UseRaisePropertyChangedWithNameOf,
+                                  Descriptors.CTL0003_FixOnPropertyChangedMethodToMatchSomeProperty);
 
         protected override bool ShouldHandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {
-            var memberSymbol = context.ContainingSymbol as ISymbol;
-            if (memberSymbol is null || memberSymbol.Kind != SymbolKind.Method)
-            {
-                return false;
-            }
+            return context.ContainingSymbol is ISymbol memberSymbol && memberSymbol.Kind == SymbolKind.Method;
+        }
 
-            return true;
+        protected override bool ShouldHandleSymbol(SymbolAnalysisContext context)
+        {
+            return context.Symbol.Kind == SymbolKind.Method;
         }
     }
 }

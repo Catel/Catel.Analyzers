@@ -1,6 +1,5 @@
 ﻿namespace Catel.Analyzers
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis;
@@ -29,6 +28,17 @@
             }
 
             return SF.ArgumentList(SF.SeparatedList(list));
+        }
+
+        public static bool IsPrivate(this SyntaxNode syntaxNode)
+        {
+            var accessModifierNode = syntaxNode.ChildTokens().FirstOrDefault(x => x.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword));
+            if (accessModifierNode.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿namespace Catel.Analyzers
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Threading;
@@ -84,7 +83,7 @@
                     {
                         // callback + message parameter: Log.ErrorAndCreateException(message => createExpFunc, message)
                         var exceptionCreationArguments = arguments.Arguments.ToList();
-                        
+
                         // Replace with lambda parameter
                         var messageArgumentIndex = exceptionCreationArguments.IndexOf(messageArgument);
                         if (messageArgumentIndex != -1)
