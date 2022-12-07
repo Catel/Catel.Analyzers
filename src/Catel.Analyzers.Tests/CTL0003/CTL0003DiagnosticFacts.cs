@@ -50,7 +50,6 @@ namespace TestApp1
             CreateConditionAsync = new TaskCommand(OnCreateConditionAsync);
         }
 
-        public string ConditionFilter { get; set; }
         public IDummaryConditions SelectedCondition { get; set; }
         public CollectionViewSource ConditionsViewSource { get; set; }
 
@@ -92,7 +91,7 @@ namespace TestApp1
             await base.CloseAsync();
         }
 
-        ↓private void OnConditionFilterChanged()
+        private void ↓OnConditionFilterChanged()
         {
             ConditionsViewSource?.View?.Refresh();
         }

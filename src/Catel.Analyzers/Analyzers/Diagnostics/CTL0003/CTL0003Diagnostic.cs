@@ -48,11 +48,31 @@
                 return;
             }
 
+            // Check if it's possible to expose type
+            var exposeAttributeType = context.Compilation.GetTypeByMetadataName(KnownSymbols.Catel_Fody.ExposeAttribute.FullName);
+            if (exposeAttributeType is null)
+            {
+                return;
+            }
+
             var containerClassSyntax = classType.GetClassDeclarationSyntax(context.CancellationToken);
+            if (containerClassSyntax is null)
+            {
+                return;
+            }
 
             var exposedMarkedDeclarations = from descendantNode in containerClassSyntax.DescendantNodes(x => x is ClassDeclarationSyntax || x is PropertyDeclarationSyntax || x is AttributeListSyntax)
                                             where descendantNode is AttributeSyntax && string.Equals(descendantNode.GetIdentifier(), KnownSymbols.Catel_Fody.ExposeAttribute.FullName, StringComparison.OrdinalIgnoreCase)
                                             select descendantNode.FirstAncestor<PropertyDeclarationSyntax>();
+
+            var semanticModel = context.Compilation.GetSemanticModel(containerClassSyntax.SyntaxTree);
+            foreach (var property in exposedMarkedDeclarations)
+            {
+                if (FodySyntax.IsPropertyExposedWithFodyAttribute(property, exposeAttributeType, abstractName, semanticModel, context.CancellationToken))
+                {
+                    return;
+                }
+            }
 
             var declarationLocation = methodSymbol.Locations[0];
 
