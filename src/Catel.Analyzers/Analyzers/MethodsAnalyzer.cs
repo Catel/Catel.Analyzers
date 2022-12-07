@@ -10,7 +10,8 @@
         /// <inheritdoc/>
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
             ImmutableArray.Create(Descriptors.CTL0001_UseDispatcherServiceInvokeTaskAsyncForTasks,
-                                  Descriptors.CTL0002_UseRaisePropertyChangedWithNameOf);
+                                  Descriptors.CTL0002_UseRaisePropertyChangedWithNameOf,
+                                  Descriptors.CTL0003_FixOnPropertyChangedMethodToMatchSomeProperty);
 
         protected override bool ShouldHandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {

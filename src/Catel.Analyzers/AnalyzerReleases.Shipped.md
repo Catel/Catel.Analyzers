@@ -1,6 +1,13 @@
 ﻿; Shipped analyzer releases
 ; https://github.com/dotnet/roslyn-analyzers/blob/master/src/Microsoft.CodeAnalysis.Analyzers/ReleaseTrackingAnalyzers.Help.md
 
+## Release 1.6.0
+
+### New Rules
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+CTL0003 | Catel.Analyzers.MVVM | Warning | Fix method name to match some property raising NotifyPropertyChanged event
+
 
 ## Release 1.5.0
 

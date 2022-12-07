@@ -14,6 +14,11 @@
         {
             internal static readonly DispatcherServiceType IDispatcherService = new();
         }
+
+        internal static class Catel_Fody
+        {
+            internal static readonly ExposeAttributeType ExposeAttribute = new();
+        }
     }
 
     internal class ObservableObjectType : QualifiedType
@@ -44,6 +49,14 @@
             : base("Catel.Logging.ILog")
         {
 
+        }
+    }
+
+    internal class ExposeAttributeType : QualifiedType
+    {
+        public ExposeAttributeType() 
+            : base("Catel.Fody.ExposeAttribute")
+        {
         }
     }
 }

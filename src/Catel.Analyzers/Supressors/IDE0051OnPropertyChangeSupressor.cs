@@ -1,10 +1,8 @@
 ﻿namespace Catel.Analyzers
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Threading;
     using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -25,15 +23,13 @@
             try
             {
                 // Get expose attribute instance and check Catel.Fody assembly
-                var exposeAttributeType = context.Compilation.GetTypeByMetadataName("Catel.Fody.ExposeAttribute");
-
+                var exposeAttributeType = context.Compilation.GetTypeByMetadataName(KnownSymbols.Catel_Fody.ExposeAttribute.FullName);
                 if (exposeAttributeType is null)
                 {
                     return;
                 }
 
                 var supresssionDescriptor = SupportedSuppressions.FirstOrDefault();
-
                 if (supresssionDescriptor is null)
                 {
                     return;
@@ -57,59 +53,40 @@
 
                     var targetSyntax = rootSyntax.FindNode(diagnostic.Location.SourceSpan, false, true);
 
-                    // Look is class weaved by Fody
-                    var containerClassSyntax = targetSyntax.FirstAncestor<ClassDeclarationSyntax>();
-                    if (containerClassSyntax is null)
-                    {
-                        continue;
-                    }
-
-                    if (context.CancellationToken.IsCancellationRequested)
-                    {
-                        return;
-                    }
-
                     var rootSemantic = context.GetSemanticModel(diagnosticSourceSyntaxTree);
-                    var containerClassSymbol = (rootSemantic.GetDeclaredSymbol(containerClassSyntax, context.CancellationToken) as ITypeSymbol);
 
-                    if (containerClassSymbol is null)
+                    // Look is class weaved by Fody
+                    if (!rootSemantic.TryGetContainingTypeInfo(targetSyntax, context.CancellationToken, out var containingType))
                     {
-                        // Wrong class declaration
                         continue;
                     }
 
-                    if (context.CancellationToken.IsCancellationRequested)
-                    {
-                        return;
-                    }
-
+                    var containerClassSymbol = containingType.DeclaredSymbol;
                     if (!containerClassSymbol.InheritsFrom(CatelBaseClassLookupName))
                     {
                         continue;
                     }
 
                     var targetSymbol = rootSemantic.GetDeclaredSymbol(targetSyntax, context.CancellationToken);
+                    if (targetSymbol is not IMethodSymbol method)
+                    {
+                        continue;
+                    }
 
                     if (context.CancellationToken.IsCancellationRequested)
                     {
                         return;
                     }
 
-                    var accessModifierNode = targetSyntax.ChildTokens().FirstOrDefault(x => x.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword));
-
-                    // Check agains "None" kine empty token
-                    if (!accessModifierNode.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword))
-                    {
-                        // Skip non-private
-                        continue;
-                    }
-
-                    if (!(targetSymbol is IMethodSymbol method) || !method.Name.StartsWith("On", StringComparison.OrdinalIgnoreCase) || !method.Name.EndsWith("Changed", StringComparison.OrdinalIgnoreCase))
+                    if (!targetSyntax.IsPrivate())
                     {
                         continue;
                     }
 
-                    var propertyName = method.Name.ReplaceFirst("On", string.Empty).ReplaceLast("Changed", string.Empty);
+                    if (!MethodConvention.TryMatchToConvention(method, "On", "Changed", out var propertyName))
+                    {
+                        continue;
+                    }
 
                     // Search for property
                     // Step 1: Search by property name through class properties
@@ -124,13 +101,18 @@
                         continue;
                     }
 
+                    var containerClassSyntax = containingType.Syntax;
+
                     var exposedMarkedDeclarations = from descendantNode in containerClassSyntax.DescendantNodes(x => x is ClassDeclarationSyntax || x is PropertyDeclarationSyntax || x is AttributeListSyntax)
                                                     where descendantNode is AttributeSyntax && string.Equals(descendantNode.GetIdentifier(), CatelFodyAttributeLookupName, StringComparison.OrdinalIgnoreCase)
                                                     select descendantNode.FirstAncestor<PropertyDeclarationSyntax>();
 
-                    if (IsAnyExposedPropertyDeclarationMatch(exposedMarkedDeclarations, exposeAttributeType, propertyName, rootSemantic, context.CancellationToken))
+                    foreach (var property in exposedMarkedDeclarations)
                     {
-                        context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
+                        if (FodySyntax.IsPropertyExposedWithFodyAttribute(property, exposeAttributeType, propertyName, rootSemantic, context.CancellationToken))
+                        {
+                            context.ReportSuppression(Suppression.Create(supresssionDescriptor, diagnostic));
+                        }
                     }
                 }
             }
@@ -138,57 +120,6 @@
             {
                 throw;
             }
-        }
-
-        private static bool IsAnyExposedPropertyDeclarationMatch(IEnumerable<PropertyDeclarationSyntax> propertyDeclarations, INamedTypeSymbol attributeTypeToMatch, string propertyName, SemanticModel model, CancellationToken cancellationToken)
-        {
-            foreach (var property in propertyDeclarations.Distinct())
-            {
-                var propertySymbol = model.GetDeclaredSymbol(property, cancellationToken);
-
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return false;
-                }
-
-                if (propertySymbol is null)
-                {
-                    continue;
-                }
-
-                var exposeAttributesList = propertySymbol.GetAttributes().Where(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, attributeTypeToMatch)).ToList();
-
-                foreach (var exposeAttribute in exposeAttributesList)
-                {
-                    if (exposeAttribute.ConstructorArguments.Any())
-                    {
-                        var constructorArgValue = exposeAttribute.ConstructorArguments.FirstOrDefault().Value?.ToString();
-
-                        if (string.Equals(constructorArgValue, propertyName, StringComparison.OrdinalIgnoreCase))
-                        {
-                            return true;
-                        }
-                    }
-
-                    if (exposeAttribute.NamedArguments.Any())
-                    {
-                        var argument = exposeAttribute.NamedArguments.FirstOrDefault(arg => string.Equals(arg.Key, "propertyName", StringComparison.OrdinalIgnoreCase));
-
-                        var propertyIsExposed = argument.Equals(default(KeyValuePair<string, TypedConstant>)) ? false : string.Equals(argument.Value.Value?.ToString() ?? string.Empty, propertyName, StringComparison.OrdinalIgnoreCase);
-                        if (propertyIsExposed)
-                        {
-                            return true;
-                        }
-                    }
-                }
-
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return false;
-                }
-            }
-
-            return false;
         }
     }
 }
