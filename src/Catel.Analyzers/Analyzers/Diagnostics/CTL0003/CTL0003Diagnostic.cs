@@ -4,6 +4,7 @@
     using System.Linq;
     using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -61,8 +62,11 @@
                 return;
             }
 
-            var exposedMarkedDeclarations = from descendantNode in containerClassSyntax.DescendantNodes(x => x is ClassDeclarationSyntax || x is PropertyDeclarationSyntax || x is AttributeListSyntax)
-                                            where descendantNode is AttributeSyntax && string.Equals(descendantNode.GetIdentifier(), KnownSymbols.Catel_Fody.ExposeAttribute.FullName, StringComparison.OrdinalIgnoreCase)
+            var exposedMarkedDeclarations = from descendantNode in containerClassSyntax.DescendantNodes(
+                                                    x => x.IsKind(SyntaxKind.AttributeList)
+                                                    || x.IsKind(SyntaxKind.PropertyDeclaration)
+                                                    || x.IsKind(SyntaxKind.ClassDeclaration))
+                                            where descendantNode is AttributeSyntax && IsSameAttribute(descendantNode)
                                             select descendantNode.FirstAncestor<PropertyDeclarationSyntax>();
 
             var semanticModel = context.Compilation.GetSemanticModel(containerClassSyntax.SyntaxTree);
@@ -78,6 +82,17 @@
 
             var diagnostic = Diagnostic.Create(Descriptors.CTL0003_FixOnPropertyChangedMethodToMatchSomeProperty, declarationLocation, methodSymbol.Name, abstractName);
             context.ReportDiagnostic(diagnostic);
+        }
+
+        private static bool IsSameAttribute(SyntaxNode syntaxNode)
+        {
+            var identifier = syntaxNode.GetIdentifier();
+            if (string.IsNullOrEmpty(identifier))
+            {
+                return false;
+            }
+
+            return KnownSymbols.Catel_Fody.ExposeAttribute.FullName.EndsWith($"{identifier}Attribute");
         }
     }
 }

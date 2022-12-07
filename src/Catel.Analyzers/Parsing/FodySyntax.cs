@@ -2,8 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Composition;
     using System.Linq;
     using System.Threading;
+    using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -23,7 +25,8 @@
                 return false;
             }
 
-            var exposeAttributesList = propertySymbol.GetAttributes().Where(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, attributeTypeToMatch)).ToList();
+            var exposeAttributesList = propertySymbol.GetAttributes()
+                .Where(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass?.ConstructedFrom, attributeTypeToMatch)).ToList();
 
             foreach (var exposeAttribute in exposeAttributesList)
             {
@@ -47,11 +50,6 @@
                         return false;
                     }
                 }
-            }
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return false;
             }
 
             return false;
