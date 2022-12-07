@@ -41,10 +41,10 @@
         {
             foreach (var linkedSyntax in typeSymbol.DeclaringSyntaxReferences)
             {
-                var declraingSyntax = linkedSyntax.GetSyntax(cancellationToken);
-                if (declraingSyntax.IsKind(SyntaxKind.ClassDeclaration))
+                var declaringSyntax = linkedSyntax.GetSyntax(cancellationToken);
+                if (declaringSyntax.IsKind(SyntaxKind.ClassDeclaration))
                 {
-                    return declraingSyntax as ClassDeclarationSyntax;
+                    return declaringSyntax as ClassDeclarationSyntax;
                 }
             }
 

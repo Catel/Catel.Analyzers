@@ -14,7 +14,7 @@
                 return false;
             }
 
-            originalName = symbol.Name.ReplaceFirst("On", string.Empty).ReplaceLast("Changed", string.Empty);
+            originalName = symbol.Name.ReplaceFirst(prefix, string.Empty).ReplaceLast(suffix, string.Empty);
             return true;
         }
     }

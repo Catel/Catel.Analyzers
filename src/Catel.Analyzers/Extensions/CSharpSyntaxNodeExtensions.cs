@@ -33,14 +33,11 @@
         public static bool IsPrivate(this SyntaxNode syntaxNode)
         {
             var accessModifierNode = syntaxNode.ChildTokens().FirstOrDefault(x => x.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword));
-
-            // Check agains "None" kind empty token
             if (accessModifierNode.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword))
             {
                 return true;
             }
 
-            // Skip non-private
             return false;
         }
     }

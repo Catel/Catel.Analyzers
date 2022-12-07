@@ -6,7 +6,7 @@
 ### New Rules
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-CTL0003 | Catel.Analyzers.MVVM | Warning | Fix method name to match some property raising NotifyPropertyChanged event
+CTL0003 | Catel.Analyzers.Core | Warning | Fix method name to match some property raising NotifyPropertyChanged event
 
 
 ## Release 1.5.0

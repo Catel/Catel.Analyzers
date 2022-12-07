@@ -26,7 +26,7 @@
             id: CTL0003Diagnostic.Id,
             title: "Fix method name to match some property raising NotifyPropertyChanged event",
             messageFormat: "Fix method name '{0}' to match some property raising NotifyPropertyChanged event or add '{1}' property",
-            category: AnalyzerCategory.MVVM,
+            category: AnalyzerCategory.Core,
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "The following method matching Catel.Fody NotifyProperyChanged handler naming convention but class missing corresponding property. This message indicates potential error.");
