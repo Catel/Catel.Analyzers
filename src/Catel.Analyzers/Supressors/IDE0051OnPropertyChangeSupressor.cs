@@ -13,7 +13,6 @@
     public class IDE0051OnPropertyChangeSupressor : DiagnosticSuppressor
     {
         private const string CatelBaseClassLookupName = "ObservableObject";
-        private const string CatelFodyAttributeLookupName = "Expose";
 
         public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions { get; } = ImmutableArray.Create(
             new SuppressionDescriptor("CTLS0001", "IDE0051", "Supress IDE0051 on methods used for automatic property change callback generation")
