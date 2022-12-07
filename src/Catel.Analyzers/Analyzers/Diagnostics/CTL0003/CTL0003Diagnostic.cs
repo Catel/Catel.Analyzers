@@ -1,6 +1,5 @@
 ﻿namespace Catel.Analyzers
 {
-    using System;
     using System.Linq;
     using Gu.Roslyn.AnalyzerExtensions;
     using Microsoft.CodeAnalysis;
@@ -10,6 +9,8 @@
 
     internal class CTL0003Diagnostic : DiagnosticBase
     {
+        private const string CatelBaseClassLookupName = "ObservableObject";
+
         public const string Id = "CTL0003";
 
         public override void HandleSymbol(SymbolAnalysisContext context)
@@ -34,6 +35,12 @@
                 return;
             }
 
+            var methodOwner = methodSymbol.ContainingType;
+            if (!methodOwner.InheritsFrom(CatelBaseClassLookupName))
+            {
+                return;
+            }
+
             if (methodSymbol.HasCallersInTypeAsync(context.CancellationToken))
             {
                 return;
@@ -43,8 +50,7 @@
             // We should check 
             // 1. Corresponding property declared explicitly
             // 2. Corresponding property [Exposed] from Model
-            var classType = methodSymbol.ContainingType;
-            if (classType.TryFindProperty(abstractName, out _))
+            if (methodOwner.TryFindProperty(abstractName, out _))
             {
                 return;
             }
@@ -56,7 +62,7 @@
                 return;
             }
 
-            var containerClassSyntax = classType.GetClassDeclarationSyntax(context.CancellationToken);
+            var containerClassSyntax = methodOwner.GetClassDeclarationSyntax(context.CancellationToken);
             if (containerClassSyntax is null)
             {
                 return;
