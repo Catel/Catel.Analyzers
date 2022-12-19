@@ -22,6 +22,15 @@
             isEnabledByDefault: true,
             description: "Use RaisePropertyChanged(nameof(MyProperty)) instead of RaisePropertyChanged(() => MyProperty) to improve performance and decrease allocations.");
 
+        internal static readonly DiagnosticDescriptor CTL0003_FixOnPropertyChangedMethodToMatchSomeProperty = Create(
+            id: CTL0003Diagnostic.Id,
+            title: "Fix method name to match some property raising NotifyPropertyChanged event",
+            messageFormat: "Fix method name '{0}' to match some property raising NotifyPropertyChanged event or add '{1}' property",
+            category: AnalyzerCategory.Core,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: "The following method matching Catel.Fody NotifyProperyChanged handler naming convention but class missing corresponding property. This message indicates potential error.");
+
         internal static readonly DiagnosticDescriptor CTL0008_DoUseThrowIfNullForArgumentCheck = Create(
             id: CTL0008Diagnostic.Id,
             title: "Use ArgumentNullException.ThrowIfNull for argument check",
