@@ -231,6 +231,43 @@ namespace TestApp1
 
                 Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0003_FixOnPropertyChangedMethodToMatchSomeProperty, before));
             }
+
+            [TestCase]
+            public void Valid_Code_Event_Handler()
+            {
+                var before = @"
+namespace TestApp1
+{
+    using Catel.MVVM;
+    using System.ComponentModel.DataAnnotations;
+    using System.Windows.Data;
+
+    public class DummyTestViewModel : ViewModelBase
+    {
+        public DummyTestViewModel(IDummyConditions dummyConditions)
+        {
+            dummyConditions.DummyConditionChanges += OnDummyConditionChanged;
+        }
+
+        private void OnDummyConditionChanged(object? sender, EventArgs e)
+        {
+            OnConditionFilterChanged();
+        }
+        public CollectionViewSource ConditionsViewSource { get; set; }
+
+        [Required]
+        public TaskCommand CreateConditionAsync { get; }
+
+        private void OnConditionFilterChanged()
+        {
+            ConditionsViewSource?.View?.Refresh();
+        }
+    }
+}";
+
+                Solution.Verify<MethodsAnalyzer>(analyzer => RoslynAssert.NoAnalyzerDiagnostics(analyzer, Descriptors.CTL0003_FixOnPropertyChangedMethodToMatchSomeProperty, before));
+
+            }
         }
     }
 }
