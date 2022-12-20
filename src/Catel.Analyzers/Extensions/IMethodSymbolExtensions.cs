@@ -3,7 +3,9 @@
     using System;
     using System.Linq;
     using System.Threading;
+    using System.Xml.Linq;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal static class IMethodSymbolExtensions
@@ -22,12 +24,25 @@
                 return false;
             }
 
-            InvocationExpressionSyntax? node = null;
             try
             {
                 var methodName = methodSymbol.Name;
-                node = classDeclaration.DescendantNodes().Cast<InvocationExpressionSyntax>()
-                    .FirstOrDefault(x => string.Equals(((MemberAccessExpressionSyntax)x.Expression).Name.ToString(), methodName));
+
+                var node = classDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>()
+                    .FirstOrDefault(x => x.Expression.IsKind(SyntaxKind.SimpleMemberAccessExpression) && string.Equals(((MemberAccessExpressionSyntax)x.Expression).Name.ToString(), methodName));
+
+                if (node is not null)
+                {
+                    return true;
+                }
+
+                if (methodSymbol.CanBeReferencedByName)
+                {
+                    var refByName = classDeclaration.DescendantNodes().OfType<IdentifierNameSyntax>()
+                        .FirstOrDefault(x => string.Equals(x.Identifier.ValueText, methodSymbol.Name));
+
+                    return refByName is not null;
+                }
             }
             catch (Exception)
             {
@@ -36,7 +51,7 @@
                 return false;
             }
 
-            return node is not null;
+            return false;
         }
     }
 }

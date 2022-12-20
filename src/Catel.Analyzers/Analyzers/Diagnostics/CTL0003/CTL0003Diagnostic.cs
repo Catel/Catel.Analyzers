@@ -55,7 +55,7 @@
                 return;
             }
 
-            // Check if it's possible to expose type
+            // Check if it's possible to expose property
             var exposeAttributeType = context.Compilation.GetTypeByMetadataName(KnownSymbols.Catel_Fody.ExposeAttribute.FullName);
             if (exposeAttributeType is null)
             {
