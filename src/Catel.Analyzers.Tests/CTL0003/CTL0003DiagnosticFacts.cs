@@ -246,7 +246,7 @@ namespace TestApp1
     {
         public DummyTestViewModel(IDummyConditions dummyConditions)
         {
-            dummyConditions.DummyConditionChanges += OnDummyConditionChanged;
+            dummyConditions.DummyConditionChanged += OnDummyConditionChanged;
         }
 
         private void OnDummyConditionChanged(object? sender, EventArgs e)

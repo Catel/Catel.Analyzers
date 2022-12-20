@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Threading;
+    using System.Xml.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,12 +24,17 @@
                 return false;
             }
 
-            InvocationExpressionSyntax? node = null;
             try
             {
                 var methodName = methodSymbol.Name;
-                node = classDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>()
+
+                var node = classDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>()
                     .FirstOrDefault(x => x.Expression.IsKind(SyntaxKind.SimpleMemberAccessExpression) && string.Equals(((MemberAccessExpressionSyntax)x.Expression).Name.ToString(), methodName));
+
+                if (node is not null)
+                {
+                    return true;
+                }
 
                 if (methodSymbol.CanBeReferencedByName)
                 {
@@ -45,7 +51,7 @@
                 return false;
             }
 
-            return node is not null;
+            return false;
         }
     }
 }
