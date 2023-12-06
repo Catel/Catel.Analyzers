@@ -1,4 +1,4 @@
-<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>net472</TargetFrameworks>
     <AssemblyName>Catel.Analyzers.Tests</AssemblyName>
@@ -24,12 +24,8 @@
     <PackageReference Include="Gu.Roslyn.Asserts" Version="4.3.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" />
-    <PackageReference Include="NUnit" Version="3.14.0" PrivateAssets="all" />
+    <PackageReference Include="NUnit" Version="4.0.1" PrivateAssets="all" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>

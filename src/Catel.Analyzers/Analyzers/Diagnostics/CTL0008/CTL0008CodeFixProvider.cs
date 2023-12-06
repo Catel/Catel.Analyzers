@@ -113,7 +113,7 @@
                 return document;
             }
 
-            if (containingNamespace.Usings.Any(x => string.Equals("System", x.Name.ToFullString())))
+            if (containingNamespace.Usings.Any(x => string.Equals("System", x.Name?.ToFullString())))
             {
                 return document;
             }
