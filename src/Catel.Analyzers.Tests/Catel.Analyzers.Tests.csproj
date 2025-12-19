@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.Net.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net472</TargetFrameworks>
     <AssemblyName>Catel.Analyzers.Tests</AssemblyName>
@@ -14,8 +14,6 @@
 
   <PropertyGroup>
     <UseWpf>true</UseWpf>
-    <ExtrasEnableImplicitWpfReferences>true</ExtrasEnableImplicitWpfReferences>
-    <ExtrasEnableImplicitWinFormsReferences>true</ExtrasEnableImplicitWinFormsReferences>
   </PropertyGroup>
 
   <ItemGroup>
