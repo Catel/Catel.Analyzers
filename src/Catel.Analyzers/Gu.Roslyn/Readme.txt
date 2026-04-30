@@ -1,0 +1,1 @@
+﻿Comes from https://github.com/GuOrg/Gu.Roslyn.Extensions (MIT)

@@ -13,7 +13,7 @@
         [Test]
         public void Valid_NoCode()
         {
-            var before = @"";
+            var before = string.Empty;
 
             RoslynAssert.Valid(Analyzer, before);
         }

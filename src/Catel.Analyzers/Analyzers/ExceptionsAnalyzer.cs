@@ -6,7 +6,9 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Diagnostics;
 
+#pragma warning disable RS1038 // Compiler extensions should be implemented in assemblies with compiler-provided references
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
+#pragma warning restore RS1038 // Compiler extensions should be implemented in assemblies with compiler-provided references
     internal class ExceptionsAnalyzer : DiagnosticAnalyzerBase
     {
         private static readonly SyntaxKind[] TriggerSyntaxNodes = new[]

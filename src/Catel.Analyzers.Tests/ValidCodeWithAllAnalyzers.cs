@@ -22,7 +22,8 @@
         [Test]
         public void NotEmpty()
         {
-            CollectionAssert.IsNotEmpty(AllAnalyzers);
+            Assert.That(AllAnalyzers, Is.Not.Empty);
+
             Assert.Pass($"Count: {AllAnalyzers.Count}");
         }
 
