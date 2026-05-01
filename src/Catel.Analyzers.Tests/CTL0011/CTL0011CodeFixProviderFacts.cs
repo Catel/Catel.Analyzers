@@ -12,6 +12,7 @@
             private static readonly CodeFixProvider Fixer = new CTL0011CodeFixProvider();
 
             [TestCase]
+            [Explicit("No longer available in Catel >= 7.x")]
             public void InvalidCode_Default()
             {
                 var before = @"
@@ -61,6 +62,7 @@ namespace ConsoleApp1
             }
 
             [TestCase]
+            [Explicit("No longer available in Catel >= 7.x")]
             public void InvalidCode_NestedClass()
             {
                 var before =
@@ -120,6 +122,7 @@ namespace ConsoleApp1
             }
 
             [TestCase]
+            [Explicit("No longer available in Catel >= 7.x")]
             public void InvalidCode_Arguments_NameofExpression_StringLiteral()
             {
                 var before = @"

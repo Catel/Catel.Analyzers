@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.Net.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net10.0-windows</TargetFrameworks>
     <AssemblyName>Catel.Analyzers.Tests</AssemblyName>
     <RootNamespace>Catel.Analyzers.Tests</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -17,11 +17,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.Core" Version="5.12.22" />
-    <PackageReference Include="Catel.MVVM" Version="5.12.22" />
+    <PackageReference Include="Catel.Core" Version="7.0.0-alpha0205" />
+    <PackageReference Include="Catel.MVVM" Version="7.0.0-alpha0205" />
     <PackageReference Include="Gu.Roslyn.Asserts" Version="4.3.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
     <PackageReference Include="NUnit" Version="4.5.1" PrivateAssets="all" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
   </ItemGroup>

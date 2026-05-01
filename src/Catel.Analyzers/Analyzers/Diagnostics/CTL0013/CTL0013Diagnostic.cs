@@ -33,12 +33,27 @@
                 return;
             }
 
+            // Only report when the assembly containing ViewModelBase has a major version higher than 6
+            var viewModelBaseType = context.SemanticModel.Compilation
+                .GetTypeByMetadataName(KnownSymbols.Catel_MVVM.ViewModelBase.FullName);
+            if (viewModelBaseType is null)
+            {
+                return;
+            }
+
+            // Assume v7 or higher if unknown
+            var assemblyVersion = viewModelBaseType.ContainingAssembly?.Identity?.Version;
+            if ((assemblyVersion?.Major ?? 7) <= 6)
+            {
+                return;
+            }
+
             // Skip if already deriving from FeaturedViewModelBase
             if (classSymbol.InheritsFrom(KnownSymbols.Catel_MVVM.FeaturedViewModelBase.Type))
             {
                 return;
             }
-
+            
             if (context.CancellationToken.IsCancellationRequested)
             {
                 return;

@@ -11,6 +11,7 @@
             private static readonly ExpectedDiagnostic ExpectedDiagnostic = ExpectedDiagnostic.Create(Descriptors.CTL0011_ProvideCatelLogOnThrowingException);
 
             [TestCase]
+            [Explicit("No longer available in Catel >= 7.x")]
             public void InvalidCode_Exception_Thrown()
             {
                 var before = @"

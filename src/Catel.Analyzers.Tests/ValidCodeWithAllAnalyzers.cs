@@ -12,7 +12,7 @@
         private static readonly IReadOnlyList<DiagnosticAnalyzer> AllAnalyzers = typeof(KnownSymbols)
             .Assembly.GetTypes()
             .Where(x => typeof(DiagnosticAnalyzer).IsAssignableFrom(x) && !x.IsAbstract)
-            .Select(t => (DiagnosticAnalyzer)Activator.CreateInstance(t))
+            .Select(t => (DiagnosticAnalyzer)Activator.CreateInstance(t)!)
             .ToArray();
 
         //private static readonly Solution AnalyzerProjectSolution = CodeFactory.CreateSolution(

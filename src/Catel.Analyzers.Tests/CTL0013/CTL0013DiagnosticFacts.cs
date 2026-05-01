@@ -21,7 +21,7 @@ namespace MyWpfApp
     using Catel.MVVM;
 
     public class MyModel { }
-
+    
     public class ↓MyViewModel : Catel.MVVM.ViewModelBase
     {
         [Model]

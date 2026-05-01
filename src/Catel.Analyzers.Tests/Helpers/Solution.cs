@@ -26,12 +26,12 @@
                 var debugMetadataReferences = MetadataReferences.CreateFromAssembly(typeof(System.Diagnostics.Debug).Assembly)
                     .WithAliases(new[] { "global", "System" });
                 var transitiveMetadataReferences = MetadataReferences.Transitive(typeof(ValidCodeWithAllAnalyzers).Assembly);
-                var catelMetadataReferences = MetadataReferences.CreateFromAssembly(typeof(Logging.Log).Assembly);
+                var catelCoreMetadataReferences = MetadataReferences.CreateFromAssembly(typeof(Catel.IoC.IoCContainer).Assembly);
                 var catelMVVMMetadataReferences = MetadataReferences.CreateFromAssembly(typeof(ViewModelBase).Assembly);
 
                 var allMetadata = transitiveMetadataReferences.Append(debugMetadataReferences)
                     .Append(systemMetadataReferences)
-                    .Append(catelMetadataReferences)
+                    .Append(catelCoreMetadataReferences)
                     .Append(catelMVVMMetadataReferences);
 
                 Settings.Default = Settings.Default.WithAllowedCompilerDiagnostics(AllowedCompilerDiagnostics.WarningsAndErrors)
