@@ -40,7 +40,6 @@
             isEnabledByDefault: true,
             description: @"Starting from .NET 6 use new ArgumentNullException.ThrowIfNull method instead of Catel.Argument.");
 
-
         internal static readonly DiagnosticDescriptor CTL0011_ProvideCatelLogOnThrowingException = Create(
             id: CTL0011Diagnostic.Id,
             title: "Provide log on throwing exception",
@@ -49,6 +48,15 @@
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Use Log.ErrorAndCreationException for throwing Exception to provide log information.");
+
+        internal static readonly DiagnosticDescriptor CTL0012_ConcreteTypesShouldGoFirstInViewModelConstructor = Create(
+            id: CTL0012Diagnostic.Id,
+            title: "Concrete types should go first",
+            messageFormat: "Concrete types should go first in a view model constructor since they are most likely used for model injection",
+            category: AnalyzerCategory.MVVM,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: "Concrete types should go first in a view model constructor since they are most likely used for model injection.");
 
 
         /// <summary>

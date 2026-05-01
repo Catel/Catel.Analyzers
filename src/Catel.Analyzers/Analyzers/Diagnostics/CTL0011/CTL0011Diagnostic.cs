@@ -40,7 +40,7 @@
             }
 
             // Don't report diagnostic if LogManager not used for this class
-            if (!IsCatelLogStaticFieldPresentsInClass(containingClass, context.SemanticModel, context.CancellationToken))
+            if (!IsCatelLogStaticFieldPresentInClass(containingClass, context.SemanticModel, context.CancellationToken))
             {
                 return;
             }
@@ -48,7 +48,7 @@
             context.ReportDiagnostic(Diagnostic.Create(Descriptors.CTL0011_ProvideCatelLogOnThrowingException, context.Node.GetLocation()));
         }
 
-        public static bool IsCatelLogStaticFieldPresentsInClass(ClassDeclarationSyntax classDeclaration, SemanticModel semanticModel, CancellationToken cancellationToken)
+        public static bool IsCatelLogStaticFieldPresentInClass(ClassDeclarationSyntax classDeclaration, SemanticModel semanticModel, CancellationToken cancellationToken)
         {
             var fieldDeclaraions = classDeclaration.ChildNodes().Where(x => x.IsKind(SyntaxKind.FieldDeclaration))
                 .Cast<FieldDeclarationSyntax>().ToList();

@@ -1,6 +1,13 @@
 ﻿; Shipped analyzer releases
 ; https://github.com/dotnet/roslyn-analyzers/blob/master/src/Microsoft.CodeAnalysis.Analyzers/ReleaseTrackingAnalyzers.Help.md
 
+## Release 7.0.0
+
+### New Rules
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+CTL0012 | Catel.Analyzers.MVVM | Warning | Concrete types should go first in a view model constructor since they are most likely used for model injection
+
 ## Release 1.6.0
 
 ### New Rules

@@ -13,6 +13,7 @@
         internal static class Catel_MVVM
         {
             internal static readonly DispatcherServiceType IDispatcherService = new();
+            internal static readonly ViewModelBaseType ViewModelBase = new();
         }
 
         internal static class Catel_Fody
@@ -40,6 +41,14 @@
             : base("Catel.Services.IDispatcherService")
         {
             InvokeAsync = new QualifiedMethod(this, "InvokeAsync");
+        }
+    }
+
+    internal class ViewModelBaseType : QualifiedType
+    {
+        public ViewModelBaseType()
+            : base("Catel.MVVM.ViewModelBase")
+        {
         }
     }
 
