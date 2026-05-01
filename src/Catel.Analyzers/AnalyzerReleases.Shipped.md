@@ -7,6 +7,7 @@
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
 CTL0012 | Catel.Analyzers.MVVM | Warning | Concrete types should go first in a view model constructor since they are most likely used for model injection
+CTL0013 | Catel.Analyzers.MVVM | Warning | Use FeaturedViewModelBase instead of ViewModelBase
 
 ## Release 1.6.0
 

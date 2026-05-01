@@ -58,6 +58,14 @@
             isEnabledByDefault: true,
             description: "Concrete types should go first in a view model constructor since they are most likely used for model injection.");
 
+        internal static readonly DiagnosticDescriptor CTL0013_UseFeaturedViewModelBase = Create(
+            id: CTL0013Diagnostic.Id,
+            title: "Use FeaturedViewModelBase instead of ViewModelBase",
+            messageFormat: "Use FeaturedViewModelBase instead of ViewModelBase for view models that use advanced features",
+            category: AnalyzerCategory.MVVM,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: "Use FeaturedViewModelBase instead of ViewModelBase for view models that use advanced features.");
 
         /// <summary>
         /// Create a DiagnosticDescriptor, which provides description about a <see cref="T:Microsoft.CodeAnalysis.Diagnostic" />.

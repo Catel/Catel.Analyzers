@@ -14,6 +14,9 @@
         {
             internal static readonly DispatcherServiceType IDispatcherService = new();
             internal static readonly ViewModelBaseType ViewModelBase = new();
+            internal static readonly FeaturedViewModelBaseType FeaturedViewModelBase = new();
+            internal static readonly ModelAttributeType ModelAttribute = new();
+            internal static readonly ViewModelToModelAttributeType ViewModelToModelAttribute = new();
         }
 
         internal static class Catel_Fody
@@ -52,12 +55,19 @@
         }
     }
 
+    internal class FeaturedViewModelBaseType : QualifiedType
+    {
+        public FeaturedViewModelBaseType()
+            : base("Catel.MVVM.FeaturedViewModelBase")
+        {
+        }
+    }
+
     internal class LogType : QualifiedType
     {
         public LogType()
             : base("Catel.Logging.ILog")
         {
-
         }
     }
 
@@ -65,6 +75,22 @@
     {
         public ExposeAttributeType()
             : base("Catel.Fody.ExposeAttribute")
+        {
+        }
+    }
+
+    internal class ModelAttributeType : QualifiedType
+    {
+        public ModelAttributeType()
+            : base("Catel.MVVM.ModelAttribute")
+        {
+        }
+    }
+
+    internal class ViewModelToModelAttributeType : QualifiedType
+    {
+        public ViewModelToModelAttributeType()
+            : base("Catel.MVVM.ViewModelToModelAttribute")
         {
         }
     }
