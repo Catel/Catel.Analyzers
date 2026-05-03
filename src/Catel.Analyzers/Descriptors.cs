@@ -67,6 +67,15 @@
             isEnabledByDefault: true,
             description: "Use FeaturedViewModelBase instead of ViewModelBase for view models that use advanced features.");
 
+        internal static readonly DiagnosticDescriptor CTL0014_CallStopAsyncOnHost = Create(
+            id: CTL0014Diagnostic.Id,
+            title: "Call StopAsync on IHost",
+            messageFormat: "Call StopAsync on IHost field '{0}' to ensure the host is properly stopped",
+            category: AnalyzerCategory.Core,
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: "When a class contains an IHost field, StopAsync should be called on it to ensure the host is properly stopped and resources are released.");
+
         /// <summary>
         /// Create a DiagnosticDescriptor, which provides description about a <see cref="T:Microsoft.CodeAnalysis.Diagnostic" />.
         /// NOTE: For localizable <paramref name="title" />, <paramref name="description" /> and/or <paramref name="messageFormat" />,

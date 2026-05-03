@@ -4,3 +4,4 @@
 ### New Rules
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
+CTL0014 | Catel.Analyzers.Core | Warning | Call StopAsync on IHost

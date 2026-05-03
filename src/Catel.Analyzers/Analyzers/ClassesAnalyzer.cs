@@ -17,7 +17,8 @@
         };
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.CTL0013_UseFeaturedViewModelBase);
+            ImmutableArray.Create(Descriptors.CTL0013_UseFeaturedViewModelBase,
+                                  Descriptors.CTL0014_CallStopAsyncOnHost);
 
         protected override SyntaxKind[] GetTriggerSyntaxNodes()
         {
