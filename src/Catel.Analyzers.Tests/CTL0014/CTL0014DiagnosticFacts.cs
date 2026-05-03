@@ -21,9 +21,9 @@ namespace MyApp
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
 
-    public partial class ↓App
+    public partial class App
     {
-        private readonly IHost _host;
+        private readonly ↓IHost _host;
 
         public App()
         {
@@ -54,9 +54,9 @@ namespace MyApp
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
 
-    public partial class ↓App
+    public partial class App
     {
-        private readonly IHost _host;
+        private readonly ↓IHost _host;
 
         public App()
         {

@@ -11,11 +11,7 @@ namespace Catel.Analyzers
     {
         public const string Id = "CTL0014";
 
-        private static readonly HashSet<string> HostTypeNames = new()
-        {
-            "IHost",
-            "Microsoft.Extensions.Hosting.IHost",
-        };
+        private const string IHostFullName = "Microsoft.Extensions.Hosting.IHost";
 
         public override void HandleSyntaxNode(SyntaxNodeAnalysisContext context)
         {
@@ -29,8 +25,8 @@ namespace Catel.Analyzers
                 return;
             }
 
-            var hostFieldNames = GetHostFieldNames(classDeclaration);
-            if (hostFieldNames.Count == 0)
+            var hostFields = GetHostFields(classDeclaration, context.SemanticModel, context.CancellationToken);
+            if (hostFields.Count == 0)
             {
                 return;
             }
@@ -40,22 +36,25 @@ namespace Catel.Analyzers
                 return;
             }
 
-            foreach (var hostFieldName in hostFieldNames)
+            foreach (var (fieldName, fieldLocation) in hostFields)
             {
-                if (!IsStopAsyncCalledOnField(classDeclaration, hostFieldName))
+                if (!IsStopAsyncCalledOnField(classDeclaration, fieldName))
                 {
                     context.ReportDiagnostic(
                         Diagnostic.Create(
                             Descriptors.CTL0014_CallStopAsyncOnHost,
-                            classDeclaration.Identifier.GetLocation(),
-                            hostFieldName));
+                            fieldLocation,
+                            fieldName));
                 }
             }
         }
 
-        private static List<string> GetHostFieldNames(ClassDeclarationSyntax classDeclaration)
+        private static List<(string FieldName, Location FieldLocation)> GetHostFields(
+            ClassDeclarationSyntax classDeclaration,
+            SemanticModel semanticModel,
+            System.Threading.CancellationToken cancellationToken)
         {
-            var hostFieldNames = new List<string>();
+            var hostFields = new List<(string, Location)>();
 
             foreach (var member in classDeclaration.Members)
             {
@@ -64,28 +63,43 @@ namespace Catel.Analyzers
                     continue;
                 }
 
-                var typeName = field.Declaration.Type.ToString();
-                if (!HostTypeNames.Contains(typeName))
+                if (!IsIHostType(field.Declaration.Type, semanticModel, cancellationToken))
                 {
                     continue;
                 }
 
                 foreach (var variable in field.Declaration.Variables)
                 {
-                    hostFieldNames.Add(variable.Identifier.Text);
+                    hostFields.Add((variable.Identifier.Text, field.Declaration.Type.GetLocation()));
                 }
             }
 
-            return hostFieldNames;
+            return hostFields;
+        }
+
+        private static bool IsIHostType(TypeSyntax typeSyntax, SemanticModel semanticModel, System.Threading.CancellationToken cancellationToken)
+        {
+            // Try semantic model first for accurate type resolution
+            var typeInfo = semanticModel.GetTypeInfo(typeSyntax, cancellationToken);
+            if (typeInfo.Type is INamedTypeSymbol typeSymbol)
+            {
+                var fullName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                return string.Equals(fullName, $"global::{IHostFullName}", System.StringComparison.Ordinal) ||
+                       string.Equals(fullName, IHostFullName, System.StringComparison.Ordinal);
+            }
+
+            // Fall back to syntax-based check when semantic model cannot resolve the type
+            var typeName = typeSyntax.ToString();
+            return typeName == "IHost" || typeName == IHostFullName;
         }
 
         private static bool IsStopAsyncCalledOnField(ClassDeclarationSyntax classDeclaration, string fieldName)
         {
-            // Check regular member access: _host.StopAsync()
             var invocations = classDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>();
 
             foreach (var invocation in invocations)
             {
+                // Check regular member access: _host.StopAsync()
                 if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
                     memberAccess.Name.Identifier.Text == "StopAsync" &&
                     memberAccess.Expression is IdentifierNameSyntax identifier &&
