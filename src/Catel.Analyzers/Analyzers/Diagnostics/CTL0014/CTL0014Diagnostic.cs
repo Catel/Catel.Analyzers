@@ -84,8 +84,7 @@ namespace Catel.Analyzers
             if (typeInfo.Type is INamedTypeSymbol typeSymbol)
             {
                 var fullName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-                return string.Equals(fullName, $"global::{IHostFullName}", System.StringComparison.Ordinal) ||
-                       string.Equals(fullName, IHostFullName, System.StringComparison.Ordinal);
+                return string.Equals(fullName, $"global::{IHostFullName}", System.StringComparison.Ordinal);
             }
 
             // Fall back to syntax-based check when semantic model cannot resolve the type
@@ -112,7 +111,7 @@ namespace Catel.Analyzers
                 if (invocation.Expression is MemberBindingExpressionSyntax memberBinding &&
                     memberBinding.Name.Identifier.Text == "StopAsync")
                 {
-                    var conditionalAccess = invocation.Parent as ConditionalAccessExpressionSyntax;
+                    var conditionalAccess = invocation.Ancestors().OfType<ConditionalAccessExpressionSyntax>().FirstOrDefault();
                     if (conditionalAccess?.Expression is IdentifierNameSyntax conditionalIdentifier &&
                         conditionalIdentifier.Identifier.Text == fieldName)
                     {
