@@ -1,4 +1,4 @@
-namespace Catel.Analyzers.Tests
+﻿namespace Catel.Analyzers.Tests
 {
     using Gu.Roslyn.Asserts;
     using NUnit.Framework;
@@ -10,7 +10,7 @@ namespace Catel.Analyzers.Tests
         {
             private static readonly ExpectedDiagnostic ExpectedDiagnostic =
                 ExpectedDiagnostic.Create(Descriptors.CTL0014_CallStopAsyncOnHost.Id,
-                    Descriptors.CTL0014_CallStopAsyncOnHost.MessageFormat.ToString());
+                    string.Format(Descriptors.CTL0014_CallStopAsyncOnHost.MessageFormat.ToString(), "_host"));
 
             [TestCase]
             public void InvalidCode_IHost_NoStopAsync()
@@ -18,7 +18,6 @@ namespace Catel.Analyzers.Tests
                 var before = @"
 namespace MyApp
 {
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
 
     public partial class App
@@ -51,7 +50,6 @@ namespace MyApp
                 var before = @"
 namespace MyApp
 {
-    using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
 
     public partial class App

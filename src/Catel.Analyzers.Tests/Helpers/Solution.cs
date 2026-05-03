@@ -25,6 +25,7 @@
                     .WithAliases(new[] { "global", "mscorlib" });
                 var debugMetadataReferences = MetadataReferences.CreateFromAssembly(typeof(System.Diagnostics.Debug).Assembly)
                     .WithAliases(new[] { "global", "System" });
+                var microsoftExtensionsHostingReferences = MetadataReferences.CreateFromAssembly(typeof(Microsoft.Extensions.Hosting.IHost).Assembly);
                 var transitiveMetadataReferences = MetadataReferences.Transitive(typeof(ValidCodeWithAllAnalyzers).Assembly);
                 var catelCoreMetadataReferences = MetadataReferences.CreateFromAssembly(typeof(Catel.IoC.IoCContainer).Assembly);
                 var catelMVVMMetadataReferences = MetadataReferences.CreateFromAssembly(typeof(ViewModelBase).Assembly);
