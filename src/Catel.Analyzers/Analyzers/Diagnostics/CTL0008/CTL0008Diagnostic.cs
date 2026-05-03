@@ -35,8 +35,12 @@
                 return;
             }
 
-            var isCatelArgument = inner.Expression is IdentifierNameSyntax identifierName
-                && string.Equals(identifierName.Identifier.ValueText, "Argument", StringComparison.OrdinalIgnoreCase);
+            var isCatelArgument = (inner.Expression is IdentifierNameSyntax identifierName
+                && string.Equals(identifierName.Identifier.ValueText, "Argument", StringComparison.OrdinalIgnoreCase))
+                || (inner.Expression is MemberAccessExpressionSyntax memberAccess
+                && string.Equals(memberAccess.Name.Identifier.ValueText, "Argument", StringComparison.OrdinalIgnoreCase)
+                && memberAccess.Expression is IdentifierNameSyntax catelIdentifier
+                && string.Equals(catelIdentifier.Identifier.ValueText, "Catel", StringComparison.OrdinalIgnoreCase));
 
             if (!isCatelArgument)
             {

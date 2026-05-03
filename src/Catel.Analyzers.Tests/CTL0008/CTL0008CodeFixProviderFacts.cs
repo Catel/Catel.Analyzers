@@ -107,6 +107,35 @@ namespace ConsoleApp1
 
                 Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.CodeFix(analyzer, Fixer, before, after));
             }
+
+            [TestCase]
+            public void InvalidCode_FullyQualified_Default()
+            {
+                var before = @"
+namespace ConsoleApp1
+{
+    internal class Program
+    {
+        public Program(object arg)
+        {
+            ↓Catel.Argument.IsNotNull(() => arg);
+        }
+    }
+}";
+                var after = @"
+namespace ConsoleApp1
+{
+    internal class Program
+    {
+        public Program(object arg)
+        {
+            ArgumentNullException.ThrowIfNull(arg);
+        }
+    }
+}";
+
+                Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.CodeFix(analyzer, Fixer, before, after));
+            }
         }
     }
 }

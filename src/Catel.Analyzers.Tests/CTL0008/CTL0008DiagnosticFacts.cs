@@ -54,6 +54,47 @@ namespace ConsoleApp1
 
                 Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.Diagnostics(analyzer, ExpectedDiagnostic, before));
             }
+
+            [TestCase]
+            public void InvalidCode_FullyQualified_ArgumentCheck_In_Ctor()
+            {
+                var before = @"
+namespace ConsoleApp1
+{
+    internal class Program
+    {
+        public Program(object arg)
+        {
+            ↓Catel.Argument.IsNotNull(() => arg);
+        }
+    }
+}";
+
+                Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.Diagnostics(analyzer, ExpectedDiagnostic, before));
+            }
+
+            [TestCase]
+            public void InvalidCode_FullyQualified_ArgumentCheck_In_Method()
+            {
+                var before = @"
+namespace ConsoleApp1
+{
+    internal class Program
+    {
+        private static void Main(string[] args)
+        {
+            ↓Catel.Argument.IsNotNull(() => args);
+
+            if (args.Length > 0)
+            {
+                Console.WriteLine(""Hello, World!"");
+            }
+        }
+    }
+}";
+
+                Solution.Verify<ArgumentsAnalyzer>(analyzer => RoslynAssert.Diagnostics(analyzer, ExpectedDiagnostic, before));
+            }
         }
 
         public class Reports_NoDiagnostic
